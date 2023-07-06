@@ -50,6 +50,7 @@ jobs:
             echo "::set-output name=update::$($reposWithUpdates.Count -gt 0)"
             echo "::set-output name=updateResult::$updateResult"
           }
+          echo $updateResult
 
       - name: Run scans
         run: |
