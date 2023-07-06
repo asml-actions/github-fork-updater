@@ -1,7 +1,9 @@
+const { Octokit } = require("octokit");
 const { exec } = require("child_process");
 const fs = require("fs");
 const token = process.argv[2];
 let parentUrls
+
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
