@@ -1,4 +1,4 @@
-const { Octokit } = require("@octokit/rest");
+const { Octokit } = require("octokit");
 const token = process.argv[2];
 
 const octokit = new Octokit({
@@ -11,7 +11,7 @@ const issueNumber = 184;
 
 const comment = "test comment.";
 
-octokit.issues
+octokit.rest.issues
   .createComment({
     owner,
     repo,
