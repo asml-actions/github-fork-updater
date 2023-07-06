@@ -1,6 +1,7 @@
 const { Octokit } = require("octokit");
 const token = process.argv[2];
 
+console.log(process.argv[3])
 const octokit = new Octokit({
   auth: token,
 });
