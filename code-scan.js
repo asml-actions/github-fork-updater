@@ -9,6 +9,8 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
     console.error(err);
     return;
   }
+  console.log(data)
+  console.log(typeof data)
   const regex = /https:\/\/github\.com\/[^\s]+/g;
   parentUrls = data.match(regex);
   
