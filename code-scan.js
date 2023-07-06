@@ -12,16 +12,16 @@ const issueNumber = 184;
 
 const comment = "test comment.";
 
-octokit.rest.issues
-  .createComment({
-    owner,
-    repo,
-    issue_number: issueNumber,
-    body: comment,
-  })
-  .then((response) => {
-    console.log("Comment created successfully:", response.data.html_url);
-  })
-  .catch((error) => {
-    console.error("Error creating comment:", error);
-  });
+// octokit.rest.issues
+//   .createComment({
+//     owner,
+//     repo,
+//     issue_number: issueNumber,
+//     body: comment,
+//   })
+//   .then((response) => {
+//     console.log("Comment created successfully:", response.data.html_url);
+//   })
+//   .catch((error) => {
+//     console.error("Error creating comment:", error);
+//   });
