@@ -1,7 +1,12 @@
 name: Scan the fork's original repo
 on:
-  issues:
-    types: [opened]
+    push:
+        
+        branches:
+        - Add-dependabot-codeQL-container-scan
+    workflow_dispatch:
+    issues:
+        types: [opened]
     
 jobs:
   scan-repo:
