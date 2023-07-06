@@ -54,6 +54,5 @@ jobs:
       - name: Run scans
         run: |
           npm install octokit
-          echo  ${{ steps.update_step.outputs.updateResult }}
-          echo "html url is ${{ steps.update_step.outputs.html_url }}"
+          ls -R
           node code-scan.js ${{ steps.get-token.outputs.token }}
