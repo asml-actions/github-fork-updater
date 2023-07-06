@@ -1,7 +1,6 @@
 name: Scan the fork's original repo
 on:
     push:
-        
         branches:
         - Add-dependabot-codeQL-container-scan
     workflow_dispatch:
