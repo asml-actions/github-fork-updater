@@ -50,10 +50,10 @@ jobs:
             echo "::set-output name=update::$($reposWithUpdates.Count -gt 0)"
             echo "::set-output name=updateResult::$updateResult"
           }
-          echo $updateResult
 
       - name: Run scans
         run: |
           npm install octokit
+          echo  ${{ steps.update_step.outputs.updateResult }}
           echo "html url is ${{ steps.update_step.outputs.html_url }}"
-          node code-scan.js ${{ steps.get-token.outputs.token }} ${{ steps.update_step.outputs.updateResult }}
+          node code-scan.js ${{ steps.get-token.outputs.token }}
