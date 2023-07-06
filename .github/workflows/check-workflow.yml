@@ -49,3 +49,6 @@ jobs:
           Write-Host "Are there any updates available? [$($reposWithUpdates.Count -gt 0)]"
           echo "::set-output name=update::$($reposWithUpdates.Count -gt 0)"
         }
+        
+    - name: Post comment
+      run: node code-scan.js ${{ steps.get-token.outputs.token }}
