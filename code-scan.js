@@ -4,12 +4,12 @@ const fs = require("fs");
 const token = process.argv[2];
 let parentUrls
 
-fs.readFile("updateResult.txt", "utf8", (err, data) => {
+fs.readFile("updateResult.txt.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
   }
-  console.log(data)
+  console.log(`data:${data}`)
   console.log(typeof data)
   const regex = /https:\/\/github\.com\/[^\s]+/g;
   parentUrls = data.match(regex);
