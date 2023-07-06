@@ -1,4 +1,7 @@
 const { Octokit } = require("octokit");
+const comment = "test comment.";
+const fs = require('fs');
+
 const token = process.argv[2];
 
 console.log(process.argv[3])
@@ -10,7 +13,15 @@ const owner = "asml-actions";
 const repo = "github-fork-updater";
 const issueNumber = 184;
 
-const comment = "test comment.";
+
+
+fs.readFile("updateResult.txt", 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log(data);
+});
 
 // octokit.rest.issues
 //   .createComment({
