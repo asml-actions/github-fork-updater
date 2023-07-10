@@ -11,7 +11,7 @@ on:
 
 jobs:
   check-for-updates:
-    runs-on: ubuntu-latest
+    runs-on: rise
     outputs:
       update: ${{steps.update_step.outputs.update}}
 
