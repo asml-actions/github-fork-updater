@@ -2,15 +2,18 @@ const { Octokit } = require("octokit");
 const { exec } = require("child_process");
 const fs = require("fs");
 const token = process.argv[2];
-let parentUrls;
 
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
   }
-  parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
-  console.log(parentUrls)
+  const parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
+  if (parentUrls) {
+    parentUrls.forEach((element) => {
+      cloneAndScan(element);
+    });
+  }
 });
 
 const octokit = new Octokit({
@@ -44,11 +47,7 @@ const cloneAndScan = (parentUrl) => {
     });
   });
 };
-if (parentUrls) {
-  parentUrls.forEach((element) => {
-    cloneAndScan(element);
-  });
-}
+
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
 // const issueNumber = 184;
