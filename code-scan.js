@@ -29,25 +29,35 @@ const cloneAndScan = (parentUrl) => {
       return;
     }
 
-    console.log(`Cloned repository from ${parentUrl}`);
+    console.log(
+      `Cloned repository from ${parentUrl}. Repo name: ${parentUrl
+        .split("/")
+        .at(-1)}`
+    );
 
-    exec("dependabot scan", { cwd: "repository" }, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error running Dependabot scan: ${error}`);
-        return;
-      }
-
-      console.log(`Dependabot scan completed`);
-
-      exec("rm -rf repository", (error, stdout, stderr) => {
+    exec(
+      "dependabot scan",
+      { cwd: `cd ${parentUrl.split("/").at(-1)};repository` },
+      (error, stdout, stderr) => {
         if (error) {
-          console.error(`Error removing cloned repository: ${error}`);
+          console.error(
+            `Error running Dependabot scan on ${parentUrl}: ${error}`
+          );
           return;
         }
 
-        console.log(`Cloned repository removed`);
-      });
-    });
+        console.log(`Dependabot scan completed`);
+
+        exec("rm -rf repository", (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error removing cloned repository: ${error}`);
+            return;
+          }
+
+          console.log(`Cloned repository removed`);
+        });
+      }
+    );
   });
 };
 
