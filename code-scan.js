@@ -30,14 +30,11 @@ const cloneAndScan = (parentUrl) => {
     }
 
     console.log(
-      `Cloned repository from ${parentUrl}. Repo name: ${parentUrl
-        .split("/")
-        .at(-1)}`
-    );
+      `Cloned repository from ${parentUrl}.`);
 
     exec(
       "dependabot scan",
-      { cwd: `cd ${parentUrl.split("/").at(-1)};repository` },
+      { cwd: `cd /${parentUrl.split("/").at(-1)};repository` },
       (error, stdout, stderr) => {
         if (error) {
           console.error(
