@@ -28,33 +28,16 @@ const cloneAndScan = (parentUrl) => {
       console.error(`Error cloning repository: ${error}`);
       return;
     }
+    const repoName = parentUrl.split("/").at(-1);
+    console.log(`Cloned repository from ${parentUrl}.`);
 
-    console.log(
-      `Cloned repository from ${parentUrl}.`);
-
-    exec(
-      "dependabot scan",
-      { cwd: `cd /${parentUrl.split("/").at(-1)};repository` },
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error(
-            `Error running Dependabot scan on ${parentUrl}: ${error}`
-          );
-          return;
-        }
-
-        console.log(`Dependabot scan completed`);
-
-        exec("rm -rf repository", (error, stdout, stderr) => {
-          if (error) {
-            console.error(`Error removing cloned repository: ${error}`);
-            return;
-          }
-
-          console.log(`Cloned repository removed`);
-        });
+    fs.appendFile("reposToScan.txt", `${repoName},`, (err) => {
+      if (err) {
+        console.error(`Error writing to file: ${err}`);
+        return;
       }
-    );
+      console.log(`Added ${repoName} to reposToScan.txt.`);
+    });
   });
 };
 
