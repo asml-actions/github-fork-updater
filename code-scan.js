@@ -11,7 +11,9 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
   const parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
   if (parentUrls) {
     parentUrls.forEach((element) => {
-      cloneAndScan(element);
+      if (element != "https://github.com/…") {
+        cloneAndScan(element);
+      }
     });
   }
 });
@@ -20,33 +22,33 @@ const octokit = new Octokit({
   auth: token,
 });
 const cloneAndScan = (parentUrl) => {
-  console.log(parentUrl)
-  // exec(`git clone ${parentUrl}`, (error, stdout, stderr) => {
-  //   if (error) {
-  //     console.error(`Error cloning repository: ${error}`);
-  //     return;
-  //   }
+  console.log(parentUrl);
+  exec(`git clone ${parentUrl}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error cloning repository: ${error}`);
+      return;
+    }
 
-  //   console.log(`Cloned repository from ${parentUrl}`);
+    console.log(`Cloned repository from ${parentUrl}`);
 
-  //   exec("dependabot scan", { cwd: "repository" }, (error, stdout, stderr) => {
-  //     if (error) {
-  //       console.error(`Error running Dependabot scan: ${error}`);
-  //       return;
-  //     }
+    exec("dependabot scan", { cwd: "repository" }, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error running Dependabot scan: ${error}`);
+        return;
+      }
 
-  //     console.log(`Dependabot scan completed`);
+      console.log(`Dependabot scan completed`);
 
-  //     exec("rm -rf repository", (error, stdout, stderr) => {
-  //       if (error) {
-  //         console.error(`Error removing cloned repository: ${error}`);
-  //         return;
-  //       }
+      exec("rm -rf repository", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error removing cloned repository: ${error}`);
+          return;
+        }
 
-  //       console.log(`Cloned repository removed`);
-  //     });
-  //   });
-  // });
+        console.log(`Cloned repository removed`);
+      });
+    });
+  });
 };
 
 // const owner = "asml-actions";
