@@ -21,25 +21,40 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
 const octokit = new Octokit({
   auth: token,
 });
-const cloneAndScan = (parentUrl) => {
-  console.log(parentUrl);
-  exec(`git clone ${parentUrl}`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error cloning repository: ${error}`);
-      return;
-    }
-    const repoName = parentUrl.split("/").at(-1);
-    console.log(`Cloned repository from ${parentUrl}.`);
 
-    fs.appendFile("reposToScan.txt", `${repoName},`, (err) => {
-      if (err) {
-        console.error(`Error writing to file: ${err}`);
+const cloneAndPush = async (parentUrl) => {
+  try {
+    console.log(parentUrl);
+    exec(`git clone ${parentUrl}`, async (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error cloning repository: ${error}`);
         return;
       }
-      console.log(`Added ${repoName} to reposToScan.txt.`);
+      const repoName = parentUrl.split("/").at(-1);
+      console.log(`Cloned repository from ${parentUrl}.`);
+
+      const repoCreationResponse = await octokit.rest.repos.createInOrg({
+        org: 'asml-actions-validation',
+        name: repoName,
+        private: false,
+      });
+
+      const { clone_url } = repoCreationResponse.data;
+
+      exec(`cd ${repoName} && git remote set-url origin ${clone_url} && git push -u origin master`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error pushing repository: ${error}`);
+          return;
+        }
+        console.log(`Pushed repository to ${clone_url}.`);
+      });
     });
-  });
+  } catch (err) {
+    console.error('Error:', err);
+  }
 };
+
+cloneAndPush(`https://github.com/asml-actions/actions-marketplace`)
 
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
