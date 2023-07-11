@@ -2,20 +2,20 @@ const { Octokit } = require("octokit");
 const { exec } = require("child_process");
 const fs = require("fs");
 const token = process.argv[2];
-
+let parentUrls
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
   }
-  const parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
-  if (parentUrls) {
-    parentUrls.forEach((element) => {
-      if (element != "https://github.com/…") {
-        cloneAndScan(element);
-      }
-    });
-  }
+  parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
+  // if (parentUrls) {
+  //   parentUrls.forEach((element) => {
+  //     if (element != "https://github.com/…") {
+  //       cloneAndPush(element);
+  //     }
+  //   });
+  // }
 });
 
 const octokit = new Octokit({
