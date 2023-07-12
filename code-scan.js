@@ -1,21 +1,22 @@
-const { Octokit } = require("octokit");
+const { Octokit } = require("@octokit/rest");
 const { exec } = require("child_process");
 const fs = require("fs");
+
 const token = process.argv[2];
-let parentUrls
+
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
   }
-  parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
-  // if (parentUrls) {
-  //   parentUrls.forEach((element) => {
-  //     if (element != "https://github.com/…") {
-  //       cloneAndPush(element);
-  //     }
-  //   });
-  // }
+  const parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
+  if (parentUrls) {
+    parentUrls.forEach((element) => {
+      if (element !== "https://github.com/…") {
+        cloneAndPush(element);
+      }
+    });
+  }
 });
 
 const octokit = new Octokit({
@@ -30,11 +31,10 @@ const cloneAndPush = async (parentUrl) => {
         console.error(`Error cloning repository: ${error}`);
         return;
       }
-      const repoName = parentUrl.split("/").at(-1);
+      const repoName = parentUrl.split("/").pop();
       console.log(`Cloned repository from ${parentUrl}.`);
 
-      const repoCreationResponse = await octokit.rest.repos.createInOrg({
-        org: 'asml-actions-validation',
+      const repoCreationResponse = await octokit.rest.repos.createForAuthenticatedUser({
         name: repoName,
         private: false,
       });
@@ -50,11 +50,12 @@ const cloneAndPush = async (parentUrl) => {
       });
     });
   } catch (err) {
-    console.error('Error:', err);
+    console.error("Error:", err);
   }
 };
 
-cloneAndPush(`https://github.com/asml-actions/actions-marketplace`)
+cloneAndPush("https://github.com/asml-actions/actions-marketplace");
+
 
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";

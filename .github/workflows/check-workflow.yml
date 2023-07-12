@@ -60,14 +60,14 @@ jobs:
           npm install octokit
           node code-scan.js ${{ steps.get-token.outputs.token }}
 
-      - name: Read directories from file
-        id: read-file
-        run: |
-          content=$(<reposToScan.txt)
-          echo "::set-output name=directories::${content//,/\\n}"
+      # - name: Read directories from file
+      #   id: read-file
+      #   run: |
+      #     content=$(<reposToScan.txt)
+      #     echo "::set-output name=directories::${content//,/\\n}"
       
-      - name: Run scans
-        uses: github/dependabot-action@v2
-        with:
-          directory: ${{ steps.read-file.outputs.directories }}
+      # - name: Run scans
+      #   uses: github/dependabot-action@v2
+      #   with:
+      #     directory: ${{ steps.read-file.outputs.directories }}
         
