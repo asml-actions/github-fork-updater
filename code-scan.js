@@ -11,12 +11,8 @@ const octokit = new Octokit({
 let compareUrls = []
 
 function getCompareUrl(input) {
-  const regex = /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/;
-  const match = input.match(regex);
-  if (match && match.length > 1) {
-    return match[1];
-  }
-  return null;
+  const regex = /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
+  return input.match(regex);
 }
 
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
@@ -24,7 +20,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
     console.error(err);
     return;
   }
-  compareUrls.push(getCompareUrl(data))
+  compareUrls = (getCompareUrl(data))
 });
 console.log(compareUrls)
 // const owner = "asml-actions";
