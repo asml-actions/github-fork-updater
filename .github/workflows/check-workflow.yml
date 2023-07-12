@@ -7,8 +7,6 @@ on:
     - cron: 7 0 * * 1-5
   workflow_dispatch:
 
-
-
 jobs:
   check-for-updates:
     runs-on: ubuntu-latest
@@ -53,21 +51,15 @@ jobs:
             $updateResult | Out-File updateResult.txt
           }
 
+      - name: upload txt to artifactory
+        uses: actions/upload-artifact@v3
+        with:
+          name: updateResult
+          path: updateResult.txt
+
       - name: Fetch repos
         env:
           GH_TOKEN: ${{ steps.get-token.outputs.token }}
         run: |
           npm install @octokit/rest
           node code-scan.js ${{ steps.get-token.outputs.token }}
-
-      # - name: Read directories from file
-      #   id: read-file
-      #   run: |
-      #     content=$(<reposToScan.txt)
-      #     echo "::set-output name=directories::${content//,/\\n}"
-      
-      # - name: Run scans
-      #   uses: github/dependabot-action@v2
-      #   with:
-      #     directory: ${{ steps.read-file.outputs.directories }}
-        
