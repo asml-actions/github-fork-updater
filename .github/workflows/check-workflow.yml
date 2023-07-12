@@ -48,7 +48,7 @@ jobs:
             $reposWithUpdates = $updateResult[-1]
             Write-Host "Are there any updates available? [$($reposWithUpdates.Count -gt 0)]"
             echo "::set-output name=update::$($reposWithUpdates.Count -gt 0)"
-            $updateResult | Out-File updateResult.txt
+            $updateResult | Set-Content -Path "updateResult.txt"
           }
 
       - name: upload txt to artifactory
