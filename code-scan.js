@@ -4,59 +4,29 @@ const fs = require("fs");
 
 const token = process.argv[2];
 
+const octokit = new Octokit({
+  auth: token,
+});
+
+let compareUrls = []
+
+function getCompareUrl(input) {
+  const regex = /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/;
+  const match = input.match(regex);
+  if (match && match.length > 1) {
+    return match[1];
+  }
+  return null;
+}
+
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
   }
-  const parentUrls = data.match(/https:\/\/github\.com\/[^\s]+/g);
-  if (parentUrls) {
-    parentUrls.forEach((element) => {
-      if (element !== "https://github.com/…") {
-        cloneAndPush(element);
-      }
-    });
-  }
+  compareUrls.push(getCompareUrl(data))
 });
-
-const octokit = new Octokit({
-  auth: token,
-});
-
-const cloneAndPush = async (parentUrl) => {
-  try {
-    console.log(parentUrl);
-    exec(`git clone ${parentUrl}`, async (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error cloning repository: ${error}`);
-        return;
-      }
-      const repoName = parentUrl.split("/").pop();
-      console.log(`Cloned repository from ${parentUrl}.`);
-
-      const repoCreationResponse = await octokit.rest.repos.createForAuthenticatedUser({
-        name: repoName,
-        private: false,
-      });
-
-      const { clone_url } = repoCreationResponse.data;
-
-      exec(`cd ${repoName} && git remote set-url origin ${clone_url} && git push -u origin master`, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error pushing repository: ${error}`);
-          return;
-        }
-        console.log(`Pushed repository to ${clone_url}.`);
-      });
-    });
-  } catch (err) {
-    console.error("Error:", err);
-  }
-};
-
-cloneAndPush("https://github.com/asml-actions/actions-marketplace");
-
-
+console.log(compareUrls)
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
 // const issueNumber = 184;

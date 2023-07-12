@@ -51,12 +51,6 @@ jobs:
             $updateResult | Set-Content -Path "updateResult.txt"
           }
 
-      - name: upload txt to artifactory
-        uses: actions/upload-artifact@v3
-        with:
-          name: updateResult
-          path: updateResult.txt
-
       - name: Fetch repos
         env:
           GH_TOKEN: ${{ steps.get-token.outputs.token }}
