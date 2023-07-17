@@ -3,30 +3,20 @@ const { exec } = require("child_process");
 const fs = require("fs");
 
 const token = process.argv[2];
-
-const octokit = new Octokit({
-  auth: token,
-});
-
-let compareUrls = [];
-
-function saveCompareUrl(input) {
-  const regex =
-    /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
-  compareUrls = input
-    .match(regex)
-    .split(",")
-    .map((item) => item.substring(11));
-}
+const octokit = new Octokit({ auth: token });
+let compareUrls
 
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
   }
-  compareUrls = saveCompareUrl(data);
+  const regex =
+    /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
+  compareUrls = data.match(regex)
+  compareUrls.map((item) => item.substring(11));
+  console.log(compareUrls);
 });
-console.log(compareUrls);
 
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
