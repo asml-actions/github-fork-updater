@@ -14,7 +14,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
   const regex =
     /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
   compareUrls = data.match(regex)
-  compareUrls.map((item) => item.substring(11));
+  compareUrls.map((item) => item.substring(11).replace('..','...'));
   console.log(compareUrls);
 });
 
