@@ -13,7 +13,7 @@ let compareUrls = [];
 function saveCompareUrl(input) {
   const regex =
     /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
-  const compareUrl = input.match(regex);
+  const compareUrl = input.match(regex).substring(11);
   console.log(`compareURL : ${compareUrl}`)
   if (compareUrl) {
     compareUrls.push(compareUrl);
@@ -25,7 +25,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
     console.error(err);
     return;
   }
-  compareUrls = getCompareUrl(data);
+  compareUrls = saveCompareUrl(data);
 });
 console.log(compareUrls)
 
