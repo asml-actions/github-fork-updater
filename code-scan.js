@@ -13,7 +13,7 @@ let compareUrls = [];
 function saveCompareUrl(input) {
   const regex =
     /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
-  const compareUrl = input.match(regex).substring(11);
+  const compareUrl = input.match(regex)
   console.log(`compareURL : ${compareUrl}`)
   if (compareUrl) {
     compareUrls.push(compareUrl);
