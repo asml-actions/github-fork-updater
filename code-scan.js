@@ -13,11 +13,10 @@ let compareUrls = [];
 function saveCompareUrl(input) {
   const regex =
     /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
-  const compareUrl = input.match(regex)
-  console.log(`compareURL : ${compareUrl}`)
-  if (compareUrl) {
-    compareUrls.push(compareUrl);
-  }
+  compareUrls = input
+    .match(regex)
+    .split(",")
+    .map((item) => item.substring(11));
 }
 
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
@@ -27,7 +26,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
   }
   compareUrls = saveCompareUrl(data);
 });
-console.log(compareUrls)
+console.log(compareUrls);
 
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
