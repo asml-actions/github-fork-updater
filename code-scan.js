@@ -23,6 +23,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
   console.log(data)
   compareUrls = (getCompareUrl(data))
 });
+console.log('compareURLS:')
 console.log(compareUrls)
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
