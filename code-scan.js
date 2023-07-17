@@ -8,11 +8,16 @@ const octokit = new Octokit({
   auth: token,
 });
 
-let compareUrls = []
+let compareUrls = [];
 
-function getCompareUrl(input) {
-  const regex = /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
-  return input.match(regex);
+function saveCompareUrl(input) {
+  const regex =
+    /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
+  const compareUrl = input.match(regex);
+  console.log(`compareURL : ${compareUrl}`)
+  if (compareUrl) {
+    compareUrls.push(compareUrl);
+  }
 }
 
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
@@ -20,11 +25,10 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
     console.error(err);
     return;
   }
-  console.log(data)
-  compareUrls = (getCompareUrl(data))
+  compareUrls = getCompareUrl(data);
 });
-console.log('compareURLS:')
 console.log(compareUrls)
+
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
 // const issueNumber = 184;
