@@ -4,17 +4,22 @@ const fs = require("fs");
 
 const token = process.argv[2];
 const octokit = new Octokit({ auth: token });
-let compareUrls
+let allData;
 
 fs.readFile("updateResult.txt", "utf8", (err, data) => {
   if (err) {
     console.error(err);
     return;
   }
-  const regex =
-    /compareUrl=(https:\/\/github\.com\/[\w-]+\/[\w-]+\/compare\/[\w-]+\.\.[\w-]+:[\w-]+)/g;
-  compareUrls = data.match(regex)
-  compareUrls.map((item) => item.substring(11).replace('..','...'));
+  data = data.split(/\r?\n/).map((item) => {
+    item = item
+      .split(" ")
+      .map((current) => current.substring(11, current.length - 1));
+    return {
+      name: item[0],
+      compareUrl: item[3],
+    };
+  });
   console.log(compareUrls);
 });
 console.log(compareUrls);
