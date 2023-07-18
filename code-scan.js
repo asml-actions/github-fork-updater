@@ -20,11 +20,11 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
       compareUrl: item[3],
     };
   });
-  createPR(allData[0].issueLink);
+  createPR(allData[0].compareUrl);
 });
 
-const createPR = async (issueLink) => {
-  const [_, owner, repository, compare] = issueLink.match(
+const createPR = async (compareUrl) => {
+  const [_, owner, repository, compare] = compareUrl.match(
     /https:\/\/github.com\/([^/]+)\/([^/]+)\/compare\/([^/]+)\.\.\./
   );
   const [baseBranch, headBranch] = compare.split("..");
