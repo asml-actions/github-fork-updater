@@ -17,27 +17,29 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
       .map((current) => current.substring(11, current.length - 1));
     return {
       name: item[0],
+      parentUrl : `h${item[2]}`,
       compareUrl: item[3],
     };
   });
-
-  createPR(allData[0].compareUrl);
+  console.log(allData)
+  // createPR(allData[0].compareUrl);
 });
-const createPR = async (compareUrl) => {
-  const [_, owner, repository, compare] = compareUrl.match(
-    /https:\/\/github.com\/([^/]+)\/([^/]+)\/compare\/([^/]+)\.\./
-  );
-  const [baseBranch, headBranch] = compare.split("..");
-  const prResponse = await octokit.pulls.create({
-    owner,
-    repo: repository,
-    title: "Test Pull Request",
-    head: headBranch,
-    base: baseBranch,
-  });
-  const pullRequest = prResponse.data;
-  console.log("Pull Request created:", pullRequest.html_url);
-};
+
+// const createPR = async (compareUrl) => {
+//   const [_, owner, repository, compare] = compareUrl.match(
+//     /https:\/\/github.com\/([^/]+)\/([^/]+)\/compare\/([^/]+)\.\./
+//   );
+//   const [baseBranch, headBranch] = compare.split("..");
+//   const prResponse = await octokit.pulls.create({
+//     owner,
+//     repo: repository,
+//     title: "Test Pull Request",
+//     head: headBranch,
+//     base: baseBranch,
+//   });
+//   const pullRequest = prResponse.data;
+//   console.log("Pull Request created:", pullRequest.html_url);
+// };
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
 // const issueNumber = 184;
