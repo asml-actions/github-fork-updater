@@ -22,8 +22,26 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
     };
   });
   console.log(allData)
+  cloneRepoToOrg(octokit, allData[0].parentUrl, 'asml-actions-validation');
   // createPR(allData[0].compareUrl);
 });
+
+async function cloneRepoToOrg(octokit, repoUrl, orgName) {
+  try {
+    const [, owner, repo] = repoUrl.match(/github.com\/([^/]+)\/([^/]+)/i);
+    const createResponse = await octokit.repos.createInOrg({ org: orgName, name: repo });
+    const cloneUrl = createResponse.data.clone_url;
+    exec(`git clone ${cloneUrl}`, (error) => {
+      if (error) console.error("Error cloning repository:", error);
+      else console.log("Repository cloned successfully!");
+    });
+  } catch (error) {
+    console.error("Error cloning repository:", error);
+  }
+}
+
+
+
 
 // const createPR = async (compareUrl) => {
 //   const [_, owner, repository, compare] = compareUrl.match(
