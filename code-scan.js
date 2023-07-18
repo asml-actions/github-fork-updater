@@ -11,7 +11,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
     console.error(err);
     return;
   }
-  data = data.split(/\r?\n/).map((item) => {
+  allData = data.split(/\r?\n/).map((item) => {
     item = item
       .split(" ")
       .map((current) => current.substring(11, current.length - 1));
@@ -20,9 +20,9 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
       compareUrl: item[3],
     };
   });
-  console.log(compareUrls);
+  console.log(allData);
 });
-console.log(compareUrls);
+console.log(allData);
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
 // const issueNumber = 184;
