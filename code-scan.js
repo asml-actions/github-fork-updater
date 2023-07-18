@@ -17,7 +17,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
   compareUrls.map((item) => item.substring(11).replace('..','...'));
   console.log(compareUrls);
 });
-
+console.log(compareUrls);
 // const owner = "asml-actions";
 // const repo = "github-fork-updater";
 // const issueNumber = 184;

@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-        Add-dependabot-codeQL-container-scans
   schedule:
     - cron: 7 0 * * 1-5
   workflow_dispatch:
