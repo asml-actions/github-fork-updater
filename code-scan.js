@@ -20,9 +20,10 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
       compareUrl: item[3],
     };
   });
-  createPR(allData[0].compareUrl);
+  console.log(`alldata in function: ${allData}`)
+  
 });
-
+createPR(allData[0].compareUrl);
 const createPR = async (compareUrl) => {
   const [_, owner, repository, compare] = compareUrl.match(
     /https:\/\/github.com\/([^/]+)\/([^/]+)\/compare\/([^/]+)\.\.\./
