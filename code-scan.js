@@ -26,7 +26,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
 createPR(allData[0].compareUrl);
 const createPR = async (compareUrl) => {
   const [_, owner, repository, compare] = compareUrl.match(
-    /https:\/\/github.com\/([^/]+)\/([^/]+)\/compare\/([^/]+)\.\.\./
+    /https:\/\/github.com\/([^/]+)\/([^/]+)\/compare\/([^/]+)\.\./
   );
   const [baseBranch, headBranch] = compare.split("..");
   const prResponse = await octokit.pulls.create({
