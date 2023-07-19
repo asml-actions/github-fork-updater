@@ -92,6 +92,20 @@ async function listAlertsForRepo(){
     console.log(`Failed to fetch dependabot alerts: ${error.message}`);
   }
 }
+async function enableCodeQLScanning() {
+  try {
+    // Enable CodeQL scanning
+    await octokit.request("PUT /repos/{owner}/{repo}/code-scanning/enable", {
+      owner,
+      repo,
+    });
+
+    console.log("CodeQL scanning enabled successfully.");
+  } catch (error) {
+    console.log(`Failed to enable CodeQL scanning: ${error.message}`);
+  }
+}
+
 async function run() {
   await deleteRepository();
   //wait for repo to be deleted
@@ -100,7 +114,8 @@ async function run() {
   await enableDependabot();
   await triggerDependabotScan();
   const alerts = await listAlertsForRepo()
-  console.log(alerts)
+  console.log(`Dependabot alerts: ${alerts.data}`)
+  await enableCodeQLScanning()
 }
 
 run();
