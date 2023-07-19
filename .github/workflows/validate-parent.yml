@@ -26,8 +26,10 @@ jobs:
       - name: Delete the forked repository if it exists
         env:
           GITHUB_TOKEN: ${{ steps.get-validation-token.outputs.token }}
+          fork-owner: asml-actions-validation
+          fork-repo-name: octoherd-testing 
         run: |
-          echo "Using this repository: [${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}]"
+          echo "Using this repository: [${{ env.fork-owner }}/${{ env.fork-repo-name }}]"
           if [ -n "$HTTPS_PROXY" ]; then
             agent="--proxy $HTTPS_PROXY"
           elif [ -n "$https_proxy" ]; then
@@ -35,26 +37,26 @@ jobs:
           else
             agent=""
           fi
-          if curl -sSL $agent -X GET -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}"; then
-            echo "Repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }} already exists. Deleting before proceeding..."
-            if curl -sSL $agent -X DELETE -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}"; then
-              echo "Successfully deleted repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}"
+          if curl -sSL $agent -X GET -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ env.fork-owner }}/${{ env.fork-repo-name }}"; then
+            echo "Repository ${{ env.fork-owner }}/${{ env.fork-repo-name }} already exists. Deleting before proceeding..."
+            if curl -sSL $agent -X DELETE -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ env.fork-owner }}/${{ env.fork-repo-name }}"; then
+              echo "Successfully deleted repository ${{ env.fork-owner }}/${{ env.fork-repo-name }}"
             else
-              echo "Deletion of repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }} failed"
+              echo "Deletion of repository ${{ env.fork-owner }}/${{ env.fork-repo-name }} failed"
             fi
           else
-            echo "Repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }} is not found"
+            echo "Repository ${{ env.fork-owner }}/${{ env.fork-repo-name }} is not found"
           fi
 
-      - name: Fork the action repository to asml-actions-validation
-        uses: asml-actions/forker@feat/add-optional-instanceUrl
-        with:
-          token: ${{ steps.get-validation-token.outputs.token }}
-          repo: ${{ needs.find-action-name.outputs.name }}
-          owner: ${{ needs.find-action-name.outputs.owner }}
-          org: ${{ env.fork-owner }}
-          targetInstanceUrl: https://api.github.com
-          # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
+    #   - name: Fork the action repository to asml-actions-validation
+    #     uses: asml-actions/forker@feat/add-optional-instanceUrl
+    #     with:
+    #       token: ${{ steps.get-validation-token.outputs.token }}
+    #       repo: ${{ env.fork-repo-name }}
+    #       owner: ${{ needs.find-action-name.outputs.owner }}
+    #       org: ${{ env.fork-owner }}
+    #       targetInstanceUrl: https://api.github.com
+    #       # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
 
-      - name: Show fork URL in summary
-        run: echo "Repository forked to https://github.com/${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+    #   - name: Show fork URL in summary
+    #     run: echo "Repository forked to https://github.com/${{ env.fork-owner }}/${{ env.fork-repo-name }}" >> $GITHUB_STEP_SUMMARY
