@@ -59,7 +59,6 @@ async function enableDependabot() {
     const response = await octokit.rest.repos.enableVulnerabilityAlerts({
       owner,
       repo: repoName,
-      organization:owner
     });
     console.log("Dependabot enabled successfully.");
   } catch (error) {
@@ -79,9 +78,20 @@ async function triggerDependabotScan() {
     console.log(`Failed to trigger Dependabot scan: ${error.message}`);
   }
 }
-// async function octokitRequest(request){
+async function listAlertsForRepo(){
+  console.log('Fetching dependabot alerts')
+  try {
+    const response = await octokit.rest.dependabot.listAlertsForRepo({
+      owner,
+      repo: repo,
+    });
 
-// }
+    console.log("Dependabot alerts fetched");
+    return response
+  } catch (error) {
+    console.log(`Failed to fetch dependabot alerts: ${error.message}`);
+  }
+}
 async function run() {
   await deleteRepository();
   //wait for repo to be deleted
@@ -89,6 +99,8 @@ async function run() {
   await createFork();
   await enableDependabot();
   await triggerDependabotScan();
+  const alerts = await listAlertsForRepo()
+  console.log(alerts)
 }
 
 run();
