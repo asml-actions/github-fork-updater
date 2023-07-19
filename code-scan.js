@@ -70,9 +70,9 @@ async function enableDependabot() {
 }
 
 async function run() {
-  await deleteRepository();
-  await createFork();
-  await enableDependabot();
+  deleteRepository();
+  createFork();
+  enableDependabot();
 }
 
 run();
