@@ -4,7 +4,7 @@ const token = process.argv[2];
 const octokit = new Octokit({
   auth: token,
 });
-
+console.log(process.argv)
 const forkOwner = 'asml-actions-validation';
 const forkRepoName = process.argv[3];
 

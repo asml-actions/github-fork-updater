@@ -32,7 +32,7 @@ jobs:
         run: |
             npm install @octokit/rest
             echo ${{env.fork-repo-name}}
-    #         node code-scan.js ${{ env.token }} ${{env.fork-repo-name}}
+            node code-scan.js ${{ env.token }} ${{env.fork-repo-name}}
 
     #   - name: Fork the action repository to asml-actions-validation
     #     uses: asml-actions/forker@v0.0.6
