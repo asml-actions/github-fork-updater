@@ -60,7 +60,6 @@ async function enableDependabot() {
       owner: forkOwner,
       repo: repoName,
     });
-
     console.log("Dependabot enabled successfully.");
   } catch (error) {
     console.log(`Failed to enable Dependabot: ${error.message}`);
