@@ -45,8 +45,9 @@ async function createFork() {
       repo: RepoName,
       organization: originalOwner,
     });
-
+    console.log(data)
     const forkedRepo = response.data;
+
     console.log(`Fork created successfully: ${forkedRepo.html_url}`);
   } catch (error) {
     console.log(`Failed to create fork: ${error.message}`);
