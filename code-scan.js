@@ -38,7 +38,7 @@ async function deleteRepository() {
     }
   }
 }
-// deleteRepository();
+
 
 async function createFork() {
   console.log(`forking ${originalOwner}/${repoName} to ${forkOwner}`)
@@ -56,4 +56,22 @@ async function createFork() {
   }
 }
 
+
+async function enableDependabot() {
+  try {
+    const response = await octokit.request('PATCH /repos/{owner}/{repo}', {
+      owner: forkOwner,
+      repo: repoName,
+      dependency_graph_enabled: true,
+      topics: ['dependabot', 'security'],
+    });
+
+    console.log('Dependabot enabled successfully.');
+  } catch (error) {
+    console.log(`Failed to enable Dependabot: ${error.message}`);
+  }
+}
+
+deleteRepository();
 createFork();
+enableDependabot();
