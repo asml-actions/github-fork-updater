@@ -10,18 +10,18 @@ permissions:
   contents: read
 
 jobs:
-  send-notification:
+  validate-parent:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
-      - uses: peter-murray/workflow-application-token-action@6a9741bf210c9a93370560585c908161170ecada # v2.1.0
-        name: Get token from GitHub App for validation
-        id: get-validation-token
-        with:
-          application_id: ${{ secrets.VALIDATION_APP_ID }}
-          application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
+    #   - uses: peter-murray/workflow-application-token-action@6a9741bf210c9a93370560585c908161170ecada # v2.1.0
+    #     name: Get token from GitHub App for validation
+    #     id: get-validation-token
+    #     with:
+    #       application_id: ${{ secrets.VALIDATION_APP_ID }}
+    #       application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
 
       - name: Delete the forked repository if it exists
         env:
