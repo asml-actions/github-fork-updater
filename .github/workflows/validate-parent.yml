@@ -8,6 +8,11 @@ on:
 permissions:
   issues: write
   contents: read
+env:
+    fork-owner: GetTuh
+    fork-repo-name: load-available-actions-gettuh 
+    token: ${{secrets.VALIDATION_APP_TOKEN}}
+    owner: devops-actions
 
 jobs:
   validate-parent:
@@ -24,23 +29,19 @@ jobs:
     #       application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
 
       - name: Delete the forked repository if it exists
-        env:
-        #   GITHUB_TOKEN: ${{ steps.get-validation-token.outputs.token }}
-          fork-owner: asml-actions-validation
-          fork-repo-name: octoherd-testing 
         run: |
             npm install @octokit/rest
-            node code-scan.js ${{ secrets.PAT_GITHUB_VALIDATION }} 
+            node code-scan.js ${{ env.token }} ${{env.fork-repo-name}}
 
-      # - name: Fork the action repository to asml-actions-validation
-    #     uses: asml-actions/forker@feat/add-optional-instanceUrl
-    #     with:
-    #       token: ${{ steps.get-validation-token.outputs.token }}
-    #       repo: ${{ env.fork-repo-name }}
-    #       owner: ${{ needs.find-action-name.outputs.owner }}
-    #       org: ${{ env.fork-owner }}
-    #       targetInstanceUrl: https://api.github.com
-    #       # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
+      - name: Fork the action repository to asml-actions-validation
+        uses: asml-actions/forker@feat/add-optional-instanceUrl
+        with:
+          token: ${{ env.token }}
+          repo: ${{ env.fork-repo-name }}
+          owner: ${{ env.owner }}
+          org: ${{ env.fork-owner }}
+          targetInstanceUrl: https://api.github.com
+          # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
 
-    #   - name: Show fork URL in summary
-    #     run: echo "Repository forked to https://github.com/${{ env.fork-owner }}/${{ env.fork-repo-name }}" >> $GITHUB_STEP_SUMMARY
+      - name: Show fork URL in summary
+        run: echo "Repository forked to https://github.com/${{ env.fork-owner }}/${{ env.fork-repo-name }}" >> $GITHUB_STEP_SUMMARY

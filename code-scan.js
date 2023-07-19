@@ -6,7 +6,7 @@ const octokit = new Octokit({
 });
 
 const forkOwner = 'asml-actions-validation';
-const forkRepoName = 'octoherd-testing';
+const forkRepoName = process.argv[3];
 
 console.log(`Using this repository: ${forkOwner}/${forkRepoName}`);
 
