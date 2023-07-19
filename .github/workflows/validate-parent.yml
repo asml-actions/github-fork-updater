@@ -12,7 +12,8 @@ env:
     fork-owner: GetTuh
     fork-repo-name: load-available-actions-gettuh 
     token: ${{secrets.PAT_GITHUB_VALIDATION}}
-    owner: asml-actions-validation
+    org: asml-actions-validation
+    original-owner: devops-actions
     
     
 
@@ -34,18 +35,18 @@ jobs:
         run: |
             npm install @octokit/rest
             echo ${{env.fork-repo-name}}
-            node code-scan.js ${{ env.token }} ${{env.fork-repo-name}}
+            node code-scan.js ${{ env.token }} ${{env.fork-repo-name}} ${{env.original-owner}}
 
-      - name: Fork the action repository to asml-actions-validation
-        id: forker
-        uses: asml-actions/forker@v0.0.6
-        with:
-          token: ${{ env.token }}
-          repo: ${{ env.fork-repo-name }}
-          owner: ${{ env.owner }}
-          org: ${{ env.fork-owner }}
-        #   targetInstanceUrl: https://api.github.com
-          # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
+    #   - name: Fork the action repository to asml-actions-validation
+    #     id: forker
+    #     uses: asml-actions/forker@v0.0.6
+    #     with:
+    #       token: ${{ env.token }}
+    #       repo: ${{ env.fork-repo-name }}
+    #       owner: ${{ env.owner }}
+    #       org: ${{ env.fork-owner }}
+    #     #   targetInstanceUrl: https://api.github.com
+    #       # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
 
-      - name: Show fork URL in summary
-        run: echo ${{steps.forker.outputs.forkUrl}}
+    #   - name: Show fork URL in summary
+    #     run: echo ${{steps.forker.outputs.forkUrl}}
