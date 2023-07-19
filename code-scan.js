@@ -12,7 +12,8 @@ const octokitFunctions = {
   delteRepo: octokit.repos.delete,
   createFork : octokit.repos.createFork,
   enableDependabot : octokit.rest.repos.enableVulnerabilityAlerts,
-  triggerDependabotScan : octokit.rest.checks.create
+  triggerDependabotScan : octokit.rest.checks.create,
+  listAlertsForRepo: octokit.rest.dependabot.listAlertsForRepo
 }
 
 async function octokitRequest(request){
@@ -25,34 +26,6 @@ async function octokitRequest(request){
     console.log(`Function ${request} finished succesfully`);
   } catch (error) {
     console.log(`Failed to run: ${error.message}`);
-  }
-}
-async function deleteRepository() {
-  try {
-    const repository = await octokit.repos.get({
-      owner,
-      repo,
-    });
-
-    console.log(`Deleting this repository: ${owner}/${repo}`);
-    console.log(
-      `Repository ${owner}/${repo} already exists. Deleting before proceeding...`
-    );
-
-    await octokit.repos.delete({
-      owner,
-      repo,
-    });
-
-    console.log(`Successfully deleted repository ${owner}/${repo}`);
-  } catch (error) {
-    if (error.status === 404) {
-      console.log(`Repository ${owner}/${repo} is not found`);
-    } else {
-      console.log(
-        `Deletion of repository ${owner}/${repo} failed: ${error.message}`
-      );
-    }
   }
 }
 
@@ -72,45 +45,6 @@ async function createFork() {
   }
 }
 
-// async function enableDependabot() {
-//   try {
-//     console.log(`Enabling Dependabot for ${owner}/${repo}`);
-//     const response = await octokit.rest.repos.enableVulnerabilityAlerts({
-//       owner,
-//       repo,
-//     });
-//     console.log("Dependabot enabled successfully.");
-//   } catch (error) {
-//     console.log(`Failed to enable Dependabot: ${error.message}`);
-//   }
-// }
-async function triggerDependabotScan() {
-  console.log("Triggering dependabot scan");
-  try {
-    const response = await octokit.rest.checks.create({
-      owner,
-      repo,
-    });
-
-    console.log("Dependabot scan triggered successfully.");
-  } catch (error) {
-    console.log(`Failed to trigger Dependabot scan: ${error.message}`);
-  }
-}
-async function listAlertsForRepo(){
-  console.log('Fetching dependabot alerts')
-  try {
-    const response = await octokit.rest.dependabot.listAlertsForRepo({
-      owner,
-      repo,
-    });
-
-    console.log("Dependabot alerts fetched");
-    return response
-  } catch (error) {
-    console.log(`Failed to fetch dependabot alerts: ${error.message}`);
-  }
-}
 async function enableCodeQLScanning() {
   try {
     // Enable CodeQL scanning
@@ -126,14 +60,15 @@ async function enableCodeQLScanning() {
 }
 
 async function run() {
-  await deleteRepository();
+  await octokitRequest('getRepo')
+  await octokitRequest('delRepo')
   //wait for repo to be deleted
   await new Promise((resolve) => setTimeout(resolve, 1000));
   await createFork();
   // await enableDependabot();
   await octokitRequest('enableDependabot')
-  await triggerDependabotScan();
-  const alerts = await listAlertsForRepo()
+  await octokitRequest('triggerDependabotScan')
+  const alerts = await octokitRequest('listAlertsForRepo')
   console.log(`Dependabot alerts: ${alerts.data}`)
   await enableCodeQLScanning()
 }
