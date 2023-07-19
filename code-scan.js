@@ -41,9 +41,9 @@ deleteRepository();
 async function createFork() {
   try {
     const response = await octokit.repos.createFork({
-      owner: originalOwner,
+      owner: forkOwner,
       repo: RepoName,
-      organization: forkOwner,
+      organization: originalOwner,
     });
 
     const forkedRepo = response.data;
