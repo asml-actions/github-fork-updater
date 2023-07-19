@@ -1,0 +1,19 @@
+name: Validate parent of fork
+
+on:
+  push:
+  issues:
+    types: [opened]
+    
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the repo 
+      uses: actions/checkout@v3
+    

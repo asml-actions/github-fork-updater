@@ -25,6 +25,7 @@ fs.readFile("updateResult.txt", "utf8", (err, data) => {
   console.log(allData)
   cloneRepoToOrg(octokit, allData[0].parentUrl, 'asml-actions-validation');
   // createPR(allData[0].compareUrl);
+  // https://github.com/tj-actions/changed-files
 });
 
 async function cloneRepoToOrg(octokit, repoUrl, orgName) {
@@ -32,7 +33,7 @@ async function cloneRepoToOrg(octokit, repoUrl, orgName) {
     const [, owner, repo] = repoUrl.match(/github.com\/([^/]+)\/([^/]+)/i);
     const createResponse = await octokit.repos.createInOrg({ org: orgName, name: repo });
     const cloneUrl = createResponse.data.clone_url;
-    exec(`git clone ${cloneUrl}`, (error) => {
+    exec(`git clone ${cloneUrl} `, (error) => {
       if (error) console.error("Error cloning repository:", error);
       else console.log("Repository cloned successfully!");
     });
