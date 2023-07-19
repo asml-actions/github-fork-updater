@@ -59,6 +59,7 @@ async function enableDependabot() {
     const response = await octokit.rest.repos.enableVulnerabilityAlerts({
       owner,
       repo: repoName,
+      organization:owner
     });
     console.log("Dependabot enabled successfully.");
   } catch (error) {
@@ -78,7 +79,9 @@ async function triggerDependabotScan() {
     console.log(`Failed to trigger Dependabot scan: ${error.message}`);
   }
 }
+// async function octokitRequest(request){
 
+// }
 async function run() {
   await deleteRepository();
   //wait for repo to be deleted
