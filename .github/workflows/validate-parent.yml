@@ -30,7 +30,7 @@ jobs:
           fork-repo-name: octoherd-testing 
         run: |
             npm install @octokit/rest
-            node code-scan.js ${{ secrets.PAT_GITHUB }} 
+            node code-scan.js ${{ secrets.PAT_GITHUB_VALIDATION }} 
 
       # - name: Fork the action repository to asml-actions-validation
     #     uses: asml-actions/forker@feat/add-optional-instanceUrl
