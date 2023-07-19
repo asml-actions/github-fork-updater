@@ -60,6 +60,7 @@ async function enableDependabot() {
       owner: forkOwner,
       repo: repoName,
       dependency_graph_enabled: true,
+      dependabot_alerts_enabled: true,
       topics: ["dependabot", "security"],
     });
 
