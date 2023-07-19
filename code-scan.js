@@ -73,6 +73,9 @@ async function enableDependabot() {
 async function run() {
   await deleteRepository();
   await createFork();
+  // wait for the repo to be registered
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
   await enableDependabot();
 }
 
