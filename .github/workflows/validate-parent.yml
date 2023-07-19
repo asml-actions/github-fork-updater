@@ -30,9 +30,10 @@ jobs:
         with:
           application_id: ${{ secrets.VALIDATION_APP_ID }}
           application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
+          organization: asml-actions-validation 
 
       - name: Delete the forked repository if it exists
         run: |
             npm install @octokit/rest
             echo ${{env.fork-repo-name}}
-            node code-scan.js ${{ env.token }} ${{env.fork-repo-name}} ${{env.original-owner}}
+            node code-scan.js ${{ env.token }} ${{env.fork-repo-name}} ${{env.original-owner}} ${{steps.get-validation-token.outputs.token}}
