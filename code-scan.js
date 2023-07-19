@@ -3,6 +3,7 @@ const { exec } = require("child_process");
 const fs = require("fs");
 
 const token = process.argv[2];
+console.log(`token ${token}`)
 const octokit = new Octokit({ auth: token });
 let allData;
 

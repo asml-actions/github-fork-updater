@@ -51,9 +51,14 @@ jobs:
             $updateResult | Set-Content -Path "updateResult.txt"
           }
 
+      - uses: peter-murray/workflow-application-token-action@6a9741bf210c9a93370560585c908161170ecada # v2.1.0
+        name: Get token from GitHub App
+        id: get-validation-token
+        with:
+          application_id: ${{ secrets.VALIDATION_APP_ID }}
+          application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
+      
       - name: Fetch repos
-        env:
-          GH_TOKEN: ${{ steps.get-token.outputs.token }}
         run: |
           npm install @octokit/rest
-          node code-scan.js ${{ steps.get-token.outputs.token }}
+          node code-scan.js ${{ steps.get-get-validation-token.outputs.token }}
