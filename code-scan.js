@@ -25,7 +25,7 @@ async function octokitRequest(request){
     });
     console.log(`Function ${request} finished succesfully`);
   } catch (error) {
-    console.log(`Failed to run: ${error.message}`);
+    console.log(`Failed to run ${request}: ${error.message}`);
   }
 }
 
@@ -69,7 +69,7 @@ async function run() {
   await octokitRequest('enableDependabot')
   await octokitRequest('triggerDependabotScan')
   const alerts = await octokitRequest('listAlertsForRepo')
-  console.log(`Dependabot alerts: ${alerts.data}`)
+  // console.log(`Dependabot alerts: ${alerts.data}`)
   await enableCodeQLScanning()
 }
 
