@@ -34,13 +34,13 @@ jobs:
             node code-scan.js ${{ env.token }} ${{env.fork-repo-name}}
 
       - name: Fork the action repository to asml-actions-validation
-        uses: asml-actions/forker@feat/add-optional-instanceUrl
+        uses: asml-actions/forker@v0.0.6
         with:
           token: ${{ env.token }}
           repo: ${{ env.fork-repo-name }}
           owner: ${{ env.owner }}
           org: ${{ env.fork-owner }}
-          targetInstanceUrl: https://api.github.com
+        #   targetInstanceUrl: https://api.github.com
           # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
 
       - name: Show fork URL in summary
