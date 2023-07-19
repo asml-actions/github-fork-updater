@@ -7,9 +7,10 @@ const octokit = new Octokit({
 const forkOwner = "asml-actions-validation";
 const repoName = process.argv[3];
 
-console.log(`Using this repository: ${forkOwner}/${repoName}`);
 
 async function deleteRepository() {
+  console.log(`Deleting this repository: ${forkOwner}/${repoName}`);
+
   try {
     const repository = await octokit.repos.get({
       owner: forkOwner,
@@ -39,6 +40,7 @@ async function deleteRepository() {
 // deleteRepository();
 
 async function createFork() {
+  console.log(`forking ${originalOwner}/${repoName} to ${organization}`)
   try {
     const response = await octokit.repos.createFork({
       owner: originalOwner,
