@@ -11,7 +11,7 @@ permissions:
 env:
     fork-owner: GetTuh
     fork-repo-name: load-available-actions-gettuh 
-    token: ${{secrets.VALIDATION_APP_TOKEN}}
+    token: ${{secrets.PAT_GITHUB_VALIDATION}}
     owner: devops-actions
 
 jobs:
@@ -34,15 +34,15 @@ jobs:
             echo ${{env.fork-repo-name}}
             node code-scan.js ${{ env.token }} ${{env.fork-repo-name}}
 
-    #   - name: Fork the action repository to asml-actions-validation
-    #     uses: asml-actions/forker@v0.0.6
-    #     with:
-    #       token: ${{ env.token }}
-    #       repo: ${{ env.fork-repo-name }}
-    #       owner: ${{ env.owner }}
-    #       org: ${{ env.fork-owner }}
-    #     #   targetInstanceUrl: https://api.github.com
-    #       # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
+      - name: Fork the action repository to asml-actions-validation
+        uses: asml-actions/forker@v0.0.6
+        with:
+          token: ${{ env.token }}
+          repo: ${{ env.fork-repo-name }}
+          owner: ${{ env.owner }}
+          org: ${{ env.fork-owner }}
+        #   targetInstanceUrl: https://api.github.com
+          # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
 
-    #   - name: Show fork URL in summary
-    #     run: echo "Repository forked to https://github.com/${{ env.fork-owner }}/${{ env.fork-repo-name }}" >> $GITHUB_STEP_SUMMARY
+      - name: Show fork URL in summary
+        run: echo "Repository forked to https://github.com/${{ env.fork-owner }}/${{ env.fork-repo-name }}" >> $GITHUB_STEP_SUMMARY
