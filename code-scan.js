@@ -1,11 +1,12 @@
 const { Octokit } = require("@octokit/rest");
 const token = process.argv[2];
-const originalOwner = process.argv[3]
+const repoName = process.argv[3];
+const originalOwner = process.argv[4]
 const octokit = new Octokit({
   auth: token,
 });
 const forkOwner = "asml-actions-validation";
-const repoName = process.argv[3];
+
 
 
 async function deleteRepository() {
