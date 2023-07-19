@@ -33,5 +33,4 @@ async function deleteRepository() {
     }
   }
 }
-
 deleteRepository();
