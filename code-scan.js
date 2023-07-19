@@ -56,12 +56,9 @@ async function createFork() {
 async function enableDependabot() {
   try {
     console.log(`Enabling Dependabot for ${forkOwner}/${repoName}`);
-    const response = await octokit.request("PATCH /repos/{owner}/{repo}", {
+    const response = await octokit.rest.repos.enableVulnerabilityAlerts({
       owner: forkOwner,
       repo: repoName,
-      dependency_graph_enabled: true,
-      dependabot_alerts_enabled: true,
-      topics: ["dependabot", "security"],
     });
 
     console.log("Dependabot enabled successfully.");
@@ -72,10 +69,9 @@ async function enableDependabot() {
 
 async function run() {
   await deleteRepository();
+  //wait for repo to be deleted
+  await new Promise(resolve => setTimeout(resolve, 1000));
   await createFork();
-  // wait for the repo to be registered
-  await new Promise(resolve => setTimeout(resolve, 5000));
-
   await enableDependabot();
 }
 
