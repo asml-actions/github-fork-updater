@@ -4,7 +4,6 @@ on:
   push:
   issues:
     types: [opened]
-    
 
 permissions:
   issues: write
@@ -14,6 +13,48 @@ jobs:
   send-notification:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout the repo 
-      uses: actions/checkout@v3
-    
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+
+      - uses: peter-murray/workflow-application-token-action@6a9741bf210c9a93370560585c908161170ecada # v2.1.0
+        name: Get token from GitHub App for validation
+        id: get-validation-token
+        with:
+          application_id: ${{ secrets.VALIDATION_APP_ID }}
+          application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
+
+      - name: Delete the forked repository if it exists
+        env:
+          GITHUB_TOKEN: ${{ steps.get-validation-token.outputs.token }}
+        run: |
+          echo "Using this repository: [${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}]"
+          if [ -n "$HTTPS_PROXY" ]; then
+            agent="--proxy $HTTPS_PROXY"
+          elif [ -n "$https_proxy" ]; then
+            agent="--proxy $https_proxy"
+          else
+            agent=""
+          fi
+          if curl -sSL $agent -X GET -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}"; then
+            echo "Repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }} already exists. Deleting before proceeding..."
+            if curl -sSL $agent -X DELETE -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}"; then
+              echo "Successfully deleted repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}"
+            else
+              echo "Deletion of repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }} failed"
+            fi
+          else
+            echo "Repository ${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }} is not found"
+          fi
+
+      - name: Fork the action repository to asml-actions-validation
+        uses: asml-actions/forker@feat/add-optional-instanceUrl
+        with:
+          token: ${{ steps.get-validation-token.outputs.token }}
+          repo: ${{ needs.find-action-name.outputs.name }}
+          owner: ${{ needs.find-action-name.outputs.owner }}
+          org: ${{ env.fork-owner }}
+          targetInstanceUrl: https://api.github.com
+          # todo: add a new comment to the issue indicating the action of forking the repo over to the other org?
+
+      - name: Show fork URL in summary
+        run: echo "Repository forked to https://github.com/${{ env.fork-owner }}/${{ needs.find-action-name.outputs.name }}" >> $GITHUB_STEP_SUMMARY
