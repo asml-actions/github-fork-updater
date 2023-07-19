@@ -5,49 +5,48 @@ const octokit = new Octokit({
   auth: token,
 });
 const forkOwner = "asml-actions-validation";
-const RepoName = process.argv[3];
+const repoName = process.argv[3];
 
-console.log(`Using this repository: ${forkOwner}/${RepoName}`);
+console.log(`Using this repository: ${forkOwner}/${repoName}`);
 
 async function deleteRepository() {
   try {
     const repository = await octokit.repos.get({
       owner: forkOwner,
-      repo: RepoName,
+      repo: repoName,
     });
 
     console.log(
-      `Repository ${forkOwner}/${RepoName} already exists. Deleting before proceeding...`
+      `Repository ${forkOwner}/${repoName} already exists. Deleting before proceeding...`
     );
 
     await octokit.repos.delete({
       owner: forkOwner,
-      repo: RepoName,
+      repo: repoName,
     });
 
-    console.log(`Successfully deleted repository ${forkOwner}/${RepoName}`);
+    console.log(`Successfully deleted repository ${forkOwner}/${repoName}`);
   } catch (error) {
     if (error.status === 404) {
-      console.log(`Repository ${forkOwner}/${RepoName} is not found`);
+      console.log(`Repository ${forkOwner}/${repoName} is not found`);
     } else {
       console.log(
-        `Deletion of repository ${forkOwner}/${RepoName} failed: ${error.message}`
+        `Deletion of repository ${forkOwner}/${repoName} failed: ${error.message}`
       );
     }
   }
 }
-deleteRepository();
+// deleteRepository();
 
 async function createFork() {
   try {
     const response = await octokit.repos.createFork({
-      owner: forkOwner,
-      repo: RepoName,
-      organization: originalOwner,
+      owner: originalOwner,
+      repo: repoName,
+      organization: forkOwner,
     });
-    console.log(data)
-    const forkedRepo = response.data;
 
+    const forkedRepo = response.data;
     console.log(`Fork created successfully: ${forkedRepo.html_url}`);
   } catch (error) {
     console.log(`Failed to create fork: ${error.message}`);
