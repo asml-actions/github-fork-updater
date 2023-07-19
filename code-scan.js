@@ -7,7 +7,26 @@ const owner = "asml-actions-validation";
 const octokit = new Octokit({
   auth: token,
 });
+const octokitFunctions = {
+  getRepo: octokit.repos.get,
+  delteRepo: octokit.repos.delete,
+  createFork : octokit.repos.createFork,
+  enableDependabot : octokit.rest.repos.enableVulnerabilityAlerts,
+  triggerDependabotScan : octokit.rest.checks.create
+}
 
+async function octokitRequest(request){
+  console.log(`Running ${request} function`)
+  try {
+    const response = await octokitFunctions[request]({
+      owner,
+      repo,
+    });
+    console.log(`Function ${request} finished succesfully`);
+  } catch (error) {
+    console.log(`Failed to run: ${error.message}`);
+  }
+}
 async function deleteRepository() {
   try {
     const repository = await octokit.repos.get({
@@ -53,18 +72,18 @@ async function createFork() {
   }
 }
 
-async function enableDependabot() {
-  try {
-    console.log(`Enabling Dependabot for ${owner}/${repo}`);
-    const response = await octokit.rest.repos.enableVulnerabilityAlerts({
-      owner,
-      repo,
-    });
-    console.log("Dependabot enabled successfully.");
-  } catch (error) {
-    console.log(`Failed to enable Dependabot: ${error.message}`);
-  }
-}
+// async function enableDependabot() {
+//   try {
+//     console.log(`Enabling Dependabot for ${owner}/${repo}`);
+//     const response = await octokit.rest.repos.enableVulnerabilityAlerts({
+//       owner,
+//       repo,
+//     });
+//     console.log("Dependabot enabled successfully.");
+//   } catch (error) {
+//     console.log(`Failed to enable Dependabot: ${error.message}`);
+//   }
+// }
 async function triggerDependabotScan() {
   console.log("Triggering dependabot scan");
   try {
@@ -111,7 +130,8 @@ async function run() {
   //wait for repo to be deleted
   await new Promise((resolve) => setTimeout(resolve, 1000));
   await createFork();
-  await enableDependabot();
+  // await enableDependabot();
+  await octokitRequest('enableDependabot')
   await triggerDependabotScan();
   const alerts = await listAlertsForRepo()
   console.log(`Dependabot alerts: ${alerts.data}`)
