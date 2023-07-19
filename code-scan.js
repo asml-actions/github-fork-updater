@@ -1,6 +1,6 @@
 const { Octokit } = require("@octokit/rest");
 const token = process.argv[2];
-const repoName = process.argv[3];
+const repo = process.argv[3];
 const originalOwner = process.argv[4];
 const owner = "asml-actions-validation";
 
@@ -12,37 +12,37 @@ async function deleteRepository() {
   try {
     const repository = await octokit.repos.get({
       owner,
-      repo: repoName,
+      repo,
     });
 
-    console.log(`Deleting this repository: ${owner}/${repoName}`);
+    console.log(`Deleting this repository: ${owner}/${repo}`);
     console.log(
-      `Repository ${owner}/${repoName} already exists. Deleting before proceeding...`
+      `Repository ${owner}/${repo} already exists. Deleting before proceeding...`
     );
 
     await octokit.repos.delete({
       owner,
-      repo: repoName,
+      repo,
     });
 
-    console.log(`Successfully deleted repository ${owner}/${repoName}`);
+    console.log(`Successfully deleted repository ${owner}/${repo}`);
   } catch (error) {
     if (error.status === 404) {
-      console.log(`Repository ${owner}/${repoName} is not found`);
+      console.log(`Repository ${owner}/${repo} is not found`);
     } else {
       console.log(
-        `Deletion of repository ${owner}/${repoName} failed: ${error.message}`
+        `Deletion of repository ${owner}/${repo} failed: ${error.message}`
       );
     }
   }
 }
 
 async function createFork() {
-  console.log(`Forking ${originalOwner}/${repoName} to ${owner}`);
+  console.log(`Forking ${originalOwner}/${repo} to ${owner}`);
   try {
     const response = await octokit.repos.createFork({
       owner: originalOwner,
-      repo: repoName,
+      repo,
       organization: owner,
     });
 
@@ -55,10 +55,10 @@ async function createFork() {
 
 async function enableDependabot() {
   try {
-    console.log(`Enabling Dependabot for ${owner}/${repoName}`);
+    console.log(`Enabling Dependabot for ${owner}/${repo}`);
     const response = await octokit.rest.repos.enableVulnerabilityAlerts({
       owner,
-      repo: repoName,
+      repo,
     });
     console.log("Dependabot enabled successfully.");
   } catch (error) {
@@ -70,7 +70,7 @@ async function triggerDependabotScan() {
   try {
     const response = await octokit.rest.checks.create({
       owner,
-      repo: repo,
+      repo,
     });
 
     console.log("Dependabot scan triggered successfully.");
@@ -83,7 +83,7 @@ async function listAlertsForRepo(){
   try {
     const response = await octokit.rest.dependabot.listAlertsForRepo({
       owner,
-      repo: repo,
+      repo,
     });
 
     console.log("Dependabot alerts fetched");
