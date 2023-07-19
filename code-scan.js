@@ -65,29 +65,27 @@ async function enableDependabot() {
     console.log(`Failed to enable Dependabot: ${error.message}`);
   }
 }
-async function triggerDependabotScan(){
-  try{
-    console.log('Triggering dependabot scan')
-    try {
-      const response = await octokit.rest.checks.create({
-        owner,
-        repo: repo,
-      });
-  
-      console.log("Dependabot scan triggered successfully.");
-    } catch (error) {
-      console.log(`Failed to trigger Dependabot scan: ${error.message}`);
-    }
+async function triggerDependabotScan() {
+  console.log("Triggering dependabot scan");
+  try {
+    const response = await octokit.rest.checks.create({
+      owner,
+      repo: repo,
+    });
+
+    console.log("Dependabot scan triggered successfully.");
+  } catch (error) {
+    console.log(`Failed to trigger Dependabot scan: ${error.message}`);
   }
 }
 
 async function run() {
   await deleteRepository();
   //wait for repo to be deleted
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   await createFork();
   await enableDependabot();
-  await triggerDependabotScan()
+  await triggerDependabotScan();
 }
 
 run();

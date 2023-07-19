@@ -11,7 +11,6 @@ permissions:
 env:
     fork-owner: GetTuh
     fork-repo-name: load-available-actions 
-    token: ${{secrets.PAT_GITHUB_VALIDATION}}
     org: asml-actions-validation
     original-owner: devops-actions
     
