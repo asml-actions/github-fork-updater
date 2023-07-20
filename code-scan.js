@@ -53,6 +53,7 @@ async function enableCodeQLScanning() {
     console.log(`Failed to enable CodeQL scanning: ${error.message}`);
   }
 }
+
 async function triggerDependabotScan() {
   try {
     await octokit.request('PATCH /repos/{owner}/{repo}', {
