@@ -1,4 +1,5 @@
 const { Octokit } = require("@octokit/rest");
+const fs = require('fs');
 const token = process.argv[2];
 const repo = process.argv[3];
 const originalOwner = process.argv[4];
