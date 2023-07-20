@@ -44,14 +44,14 @@ async function putRequest(request) { //generic function for PUT requests
 }
 
 async function pushWorkflowFile() {
-  const workflowFile = fs.readFileSync('codeql-analysis.yml', "utf8");
+  const workflowFile = fs.readFileSync('codeql-analysis-check.yml', "utf8");
   try {
     const response = await octokit.request(
-      "PUT /repos/{owner}/{repo}/contents/.github/workflows/example.yml",
+      "PUT /repos/{owner}/{repo}/contents/.github/workflows/codeql-analysis-check.yml",
       {
         owner,
         repo,
-        path: ".github/workflows/example.yml",
+        path: ".github/workflows/codeql-analysis-check.yml",
         message: "Create example workflow",
         content: Buffer.from(workflowFile).toString("base64"),
       }
