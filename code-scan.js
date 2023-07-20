@@ -22,7 +22,6 @@ async function octokitRequest(request) {
     // few functions require different properties
     let requestProperties = { owner, repo };
     const response = await octokitFunctions[request](requestProperties);
-
     console.log(`Function ${request} finished succesfully`);
     return response
   } catch (error) {
