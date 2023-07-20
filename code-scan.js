@@ -71,7 +71,8 @@ async function run() {
 
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${stringify(alerts)}`);
-  // pushWorkflowFile()
+
+  pushWorkflowFile()
 }
 
 run();
