@@ -76,6 +76,7 @@ async function triggerDependabotScan() {
       repo,
       name: 'Dependabot Scan',
       head_branch: 'main',
+      head_sha:'338005ddd2b827e298b98b101bdb49504d279a2b'
     });
 
     console.log('Dependabot scan triggered successfully.');
@@ -90,7 +91,8 @@ async function run() {
 
   await createFork();
   let repoInfo = await octokitRequest("getRepo");
-  console.log(repoInfo)
+  // console.log(repoInfo)
+  // repoInfo.data.
   await octokitRequest("enableDependabot");
   await triggerDependabotScan()
   // await octokitRequest("triggerDependabotScan");
