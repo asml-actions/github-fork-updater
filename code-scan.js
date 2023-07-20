@@ -91,7 +91,7 @@ async function run() {
   // await octokitRequest("triggerDependabotScan");
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${alerts}`);
-  await enableCodeQLScanning();
+  // await enableCodeQLScanning();
 }
 
 run();
