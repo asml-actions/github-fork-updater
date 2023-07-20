@@ -36,7 +36,6 @@ async function octokitRequest(request) {
   }
 }
 
-
 async function enableCodeQLScanning() {
   try {
     await octokit.request("PUT /repos/{owner}/{repo}/actions/workflows", {
