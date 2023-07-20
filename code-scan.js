@@ -9,7 +9,7 @@ const octokit = new Octokit({
 });
 const octokitFunctions = {
   getRepo: octokit.repos.get,
-  delteRepo: octokit.repos.delete,
+  delRepo: octokit.repos.delete,
   createFork: octokit.repos.createFork,
   enableDependabot: octokit.rest.repos.enableVulnerabilityAlerts,
   triggerDependabotScan: octokit.rest.checks.create,
@@ -19,19 +19,16 @@ const octokitFunctions = {
 async function octokitRequest(request) {
   console.log(`Running ${request} function`);
   try {
-    if (request == "triggerDependabotScan") {
-      const response = await octokitFunctions[request]({
-        owner,
-        repo,
-        name: "Dependabot Scan",
-        head_branch: "main"
-      });
-    } else {
-      const response = await octokitFunctions[request]({
-        owner,
-        repo,
-      });
+    // few functions require different properties
+    let requestProperties = { owner, repo };
+    switch (request) {
+      case "triggerDependabotScan":
+        requestProperties.name = "Dependabot Scan";
+        requestProperties.head_branch = "main";
     }
+    console.log(requestProperties)
+    const response = await octokitFunctions[request](requestProperties);
+
     console.log(`Function ${request} finished succesfully`);
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
@@ -81,7 +78,7 @@ async function run() {
   await octokitRequest("enableDependabot");
   await octokitRequest("triggerDependabotScan");
   const alerts = await octokitRequest("listAlertsForRepo");
-  console.log(`Dependabot alerts: ${alerts}`)
+  console.log(`Dependabot alerts: ${alerts}`);
   await enableCodeQLScanning();
 }
 
