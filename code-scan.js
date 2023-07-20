@@ -87,7 +87,7 @@ async function run() {
   await octokitRequest("createFork");
 
   await putRequest('vulnerability-alerts') // Enable dependabot
-  await triggerDependabotScan(); // Possibly redundant? 
+  // await triggerDependabotScan(); // Possibly redundant? 
 
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${alerts}`);
