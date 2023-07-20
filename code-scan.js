@@ -23,6 +23,7 @@ async function octokitRequest(request) {
     let requestProperties = { owner, repo };
     switch (request){
         case 'createFork':
+          requestProperties.owner = originalOwner
           requestProperties.organization = owner
           break;
     }
