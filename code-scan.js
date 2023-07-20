@@ -12,7 +12,6 @@ const octokitFunctions = {
   delRepo: octokit.repos.delete,
   createFork: octokit.repos.createFork,
   enableDependabot: octokit.rest.repos.enableVulnerabilityAlerts,
-  triggerDependabotScan: octokit.rest.checks.create,
   listAlertsForRepo: octokit.rest.dependabot.listAlertsForRepo,
 };
 
@@ -76,11 +75,11 @@ async function run() {
   let repoInfo = await octokitRequest("getRepo");
   // console.log(repoInfo)
   // repoInfo.data.
-  // await octokitRequest("enableDependabot");
-  // await triggerDependabotScan()
-  // await octokitRequest("triggerDependabotScan");
-  // const alerts = await octokitRequest("listAlertsForRepo");
-  // console.log(`Dependabot alerts: ${alerts}`);
+  await octokitRequest("enableDependabot");
+  await triggerDependabotScan()
+  
+  const alerts = await octokitRequest("listAlertsForRepo");
+  console.log(`Dependabot alerts: ${alerts}`);
   // await enableCodeQLScanning();
 }
 
