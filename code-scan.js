@@ -33,7 +33,13 @@ async function octokitRequest(request) {
     console.log(`Failed to run ${request}: ${error.message}`);
   }
 }
-
+async function putRequest(request) { //generic function for PUT requests
+  try {
+    await octokit.request(`PUT /repos/{owner}/{repo}/${request}`, { owner, repo });
+  } catch (error) {
+    console.log(`Failed to run ${request}: ${error.message}`);
+  }
+}
 async function enableCodeQLScanning() {
   try {
     await octokit.request("PUT /repos/{owner}/{repo}/actions/workflows", {
@@ -66,19 +72,38 @@ async function triggerDependabotScan() {
     console.log(`Failed to trigger Dependabot scan: ${error.message}`);
   }
 }
+async function pushWorkflowFile() {
+  const workflowFile = fs.readFileSync('codeql-analysis.yml', "utf8");
+  try {
+    const response = await octokit.request(
+      "PUT /repos/{owner}/{repo}/contents/.github/workflows/example.yml",
+      {
+        owner,
+        repo,
+        path: ".github/workflows/example.yml",
+        message: "Create example workflow",
+        content: Buffer.from(workflowFile).toString("base64"),
+      }
+    );
+
+    console.log("Workflow file created successfully");
+  } catch (error) {
+    console.error("Error creating workflow file:", error);
+  }
+}
+
+
 async function run() {
   await octokitRequest("delRepo");
   await octokitRequest("createFork");
-  // await octokitRequest("enableDependabot");
-  await octokit.request("PUT /repos/{owner}/{repo}/vulnerability-alerts", {
-    owner,
-    repo,
-  });
-  await triggerDependabotScan();
+
+  await putRequest('vulnerability-alerts') // Enable dependabot
+  await triggerDependabotScan(); // Possibly redundant? 
 
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${alerts}`);
   await enableCodeQLScanning();
+  pushWorkflowFile()
 }
 
 run();
