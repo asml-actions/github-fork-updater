@@ -43,7 +43,12 @@ async function putRequest(request) { //generic function for PUT requests
   }
 }
 
-async function pushWorkflowFile() {
+async function pushWorkflowFile() { /*Works with postman but here it returns : 
+Error creating workflow file: RequestError [HttpError]: Unable to read Git 
+repository contents. We've notified our support staff. If this error persists, 
+or if you have any questions, please contact us. 
+Temporary error?
+  */
   const workflowFile = fs.readFileSync('codeql-analysis-check.yml', "utf8");
   try {
     const response = await octokit.request(
