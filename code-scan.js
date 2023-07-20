@@ -69,7 +69,11 @@ async function triggerDependabotScan() {
 async function run() {
   await octokitRequest("delRepo");
   await octokitRequest("createFork");
-  await octokitRequest("enableDependabot");
+  // await octokitRequest("enableDependabot");
+  await octokit.request("PUT /repos/{owner}/{repo}vulnerability-alerts", {
+    owner,
+    repo,
+  });
   await triggerDependabotScan();
 
   const alerts = await octokitRequest("listAlertsForRepo");
