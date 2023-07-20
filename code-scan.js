@@ -29,8 +29,7 @@ async function octokitRequest(request) {
     }
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
-    console.log(response)
-    return response;
+    return response.data;
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
   }
