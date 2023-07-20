@@ -68,7 +68,20 @@ async function enableCodeQLScanning() {
     console.log(`Failed to enable CodeQL scanning: ${error.message}`);
   }
 }
+async function triggerDependabotScan() {
+  try {
+    const response = await octokit.checks.create({
+      owner,
+      repo,
+      name: 'Dependabot Scan',
+      head_branch: 'main', // Replace with the desired branch name
+    });
 
+    console.log('Dependabot scan triggered successfully.');
+  } catch (error) {
+    console.log(`Failed to trigger Dependabot scan: ${error.message}`);
+  }
+}
 async function run() {
   await octokitRequest("getRepo");
   await octokitRequest("delRepo");
@@ -76,7 +89,8 @@ async function run() {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   await createFork();
   await octokitRequest("enableDependabot");
-  await octokitRequest("triggerDependabotScan");
+  await triggerDependabotScan()
+  // await octokitRequest("triggerDependabotScan");
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${alerts}`);
   await enableCodeQLScanning();
