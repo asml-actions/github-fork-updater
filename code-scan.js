@@ -76,11 +76,11 @@ async function run() {
   let repoInfo = await octokitRequest("getRepo");
   // console.log(repoInfo)
   // repoInfo.data.
-  await octokitRequest("enableDependabot");
+  // await octokitRequest("enableDependabot");
   // await triggerDependabotScan()
   // await octokitRequest("triggerDependabotScan");
-  const alerts = await octokitRequest("listAlertsForRepo");
-  console.log(`Dependabot alerts: ${alerts}`);
+  // const alerts = await octokitRequest("listAlertsForRepo");
+  // console.log(`Dependabot alerts: ${alerts}`);
   // await enableCodeQLScanning();
 }
 
