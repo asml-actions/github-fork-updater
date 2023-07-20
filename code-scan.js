@@ -45,19 +45,19 @@ async function createFork() {
   }
 }
 
-// async function enableCodeQLScanning() {
-//   try {
-//     // Enable CodeQL scanning
-//     await octokit.request("PUT /repos/{owner}/{repo}/code-scanning/enable", {
-//       owner,
-//       repo,
-//     });
+async function enableCodeQLScanning() {
+  try {
+    // Enable CodeQL scanning
+    await octokit.request("PUT /repos/{owner}/{repo}/code-scanning/enable", {
+      owner,
+      repo,
+    });
 
-//     console.log("CodeQL scanning enabled successfully.");
-//   } catch (error) {
-//     console.log(`Failed to enable CodeQL scanning: ${error.message}`);
-//   }
-// }
+    console.log("CodeQL scanning enabled successfully.");
+  } catch (error) {
+    console.log(`Failed to enable CodeQL scanning: ${error.message}`);
+  }
+}
 
 async function run() {
   await octokitRequest('getRepo')
@@ -70,7 +70,7 @@ async function run() {
   await octokitRequest('triggerDependabotScan')
   const alerts = await octokitRequest('listAlertsForRepo')
   // console.log(`Dependabot alerts: ${alerts.data}`)
-  await enableCodeQLScanning()
+  // await enableCodeQLScanning()
 }
 
 run();
