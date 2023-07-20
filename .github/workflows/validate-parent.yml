@@ -9,8 +9,7 @@ permissions:
   issues: write
   contents: read
 env:
-    fork-owner: GetTuh
-    fork-repo-name: load-available-actions 
+    fork-repo-name: actionlint 
     org: asml-actions-validation
     original-owner: devops-actions
     
