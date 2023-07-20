@@ -52,7 +52,7 @@ async function enableCodeQLScanning() {
       owner,
       repo,
     });
-
+    console.log('Workflows enabled')
     await octokit.request("PUT /repos/{owner}/{repo}/code-scanning/enable", {
       owner,
       repo,
