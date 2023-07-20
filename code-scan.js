@@ -34,6 +34,7 @@ async function octokitRequest(request) {
     console.log(`Failed to run ${request}: ${error.message}`);
   }
 }
+
 async function putRequest(request) { //generic function for PUT requests
   try {
     await octokit.request(`PUT /repos/{owner}/{repo}/${request}`, { owner, repo });
@@ -41,6 +42,7 @@ async function putRequest(request) { //generic function for PUT requests
     console.log(`Failed to run ${request}: ${error.message}`);
   }
 }
+
 async function enableCodeQLScanning() {
   try {
     await octokit.request("PUT /repos/{owner}/{repo}/actions/workflows", {
@@ -59,20 +61,6 @@ async function enableCodeQLScanning() {
   }
 }
 
-async function triggerDependabotScan() {
-  try {
-    await octokit.request("PATCH /repos/{owner}/{repo}", {
-      owner,
-      repo,
-      dependency_graph_enabled: true,
-      security_and_analysis_enabled: true,
-      dependabot_version_updates: "none",
-    });
-    console.log("Dependabot scan triggered successfully.");
-  } catch (error) {
-    console.log(`Failed to trigger Dependabot scan: ${error.message}`);
-  }
-}
 async function pushWorkflowFile() {
   const workflowFile = fs.readFileSync('codeql-analysis.yml', "utf8");
   try {
@@ -103,7 +91,7 @@ async function run() {
 
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${alerts}`);
-  await enableCodeQLScanning();
+  // await enableCodeQLScanning();
   pushWorkflowFile()
 }
 
