@@ -24,6 +24,7 @@ async function octokitRequest(request) {
         owner,
         repo,
         name: "Dependabot Scan",
+        head_branch: "main"
       });
     } else {
       const response = await octokitFunctions[request]({

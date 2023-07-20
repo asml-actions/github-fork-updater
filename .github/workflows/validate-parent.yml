@@ -31,7 +31,7 @@ jobs:
           application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
           organization: asml-actions-validation 
 
-      - name: Delete the forked repository if it exists
+      - name: Run the checks
         run: |
             npm install @octokit/rest
             echo ${{env.fork-repo-name}}
