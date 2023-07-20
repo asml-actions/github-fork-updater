@@ -30,6 +30,7 @@ async function octokitRequest(request) {
     const response = await octokitFunctions[request](requestProperties);
 
     console.log(`Function ${request} finished succesfully`);
+    return response
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
   }
@@ -74,8 +75,7 @@ async function triggerDependabotScan() {
       owner,
       repo,
       name: 'Dependabot Scan',
-      // head_branch: 'main',
-      head_sha: '788357e'
+      head_branch: 'main',
     });
 
     console.log('Dependabot scan triggered successfully.');
@@ -84,11 +84,13 @@ async function triggerDependabotScan() {
   }
 }
 async function run() {
-  await octokitRequest("getRepo");
   await octokitRequest("delRepo");
   //wait for repo to be deleted
   await new Promise((resolve) => setTimeout(resolve, 1000));
+
   await createFork();
+  let repoInfo = await octokitRequest("getRepo");
+  console.log(repoInfo)
   await octokitRequest("enableDependabot");
   await triggerDependabotScan()
   // await octokitRequest("triggerDependabotScan");
