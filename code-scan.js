@@ -21,12 +21,6 @@ async function octokitRequest(request) {
   try {
     // few functions require different properties
     let requestProperties = { owner, repo };
-    switch (request) {
-      case "triggerDependabotScan":
-        requestProperties.name = "Dependabot Scan";
-        requestProperties.head_branch = "main";
-    }
-    console.log(requestProperties)
     const response = await octokitFunctions[request](requestProperties);
 
     console.log(`Function ${request} finished succesfully`);
