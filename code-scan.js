@@ -36,21 +36,6 @@ async function octokitRequest(request) {
   }
 }
 
-async function createFork() {
-  console.log(`Forking ${originalOwner}/${repo} to ${owner}`);
-  try {
-    const response = await octokit.repos.createFork({
-      owner: originalOwner,
-      repo,
-      organization: owner,
-    });
-
-    const forkedRepo = response.data;
-    console.log(`Fork created successfully: ${forkedRepo.html_url}`);
-  } catch (error) {
-    console.log(`Failed to create fork: ${error.message}`);
-  }
-}
 
 async function enableCodeQLScanning() {
   try {
@@ -71,14 +56,12 @@ async function enableCodeQLScanning() {
 }
 async function triggerDependabotScan() {
   try {
-    const response = await octokit.checks.create({
+    await octokit.request('PATCH /repos/{owner}/{repo}', {
       owner,
       repo,
-      name: 'Dependabot Scan',
-      head_branch: 'main',
-      head_sha:'338005ddd2b827e298b98b101bdb49504d279a2b'
+      dependency_graph_enabled: true,
+      security_and_analysis_enabled: true
     });
-
     console.log('Dependabot scan triggered successfully.');
   } catch (error) {
     console.log(`Failed to trigger Dependabot scan: ${error.message}`);
@@ -94,7 +77,7 @@ async function run() {
   // console.log(repoInfo)
   // repoInfo.data.
   await octokitRequest("enableDependabot");
-  await triggerDependabotScan()
+  // await triggerDependabotScan()
   // await octokitRequest("triggerDependabotScan");
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${alerts}`);
