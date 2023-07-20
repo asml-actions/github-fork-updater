@@ -70,7 +70,7 @@ async function run() {
   await octokitRequest("delRepo");
   await octokitRequest("createFork");
   // await octokitRequest("enableDependabot");
-  await octokit.request("PUT /repos/{owner}/{repo}vulnerability-alerts", {
+  await octokit.request("PUT /repos/{owner}/{repo}/vulnerability-alerts", {
     owner,
     repo,
   });
