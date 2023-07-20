@@ -81,7 +81,6 @@ async function pushWorkflowFile() {
   }
 }
 
-
 async function run() {
   await octokitRequest("delRepo");
   await octokitRequest("createFork");
