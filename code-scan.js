@@ -43,24 +43,6 @@ async function putRequest(request) { //generic function for PUT requests
   }
 }
 
-async function enableCodeQLScanning() {
-  try {
-    await octokit.request("PUT /repos/{owner}/{repo}/actions/workflows", {
-      owner,
-      repo,
-    });
-    console.log("Workflows enabled");
-    await octokit.request("PUT /repos/{owner}/{repo}/code-scanning/enable", {
-      owner,
-      repo,
-    });
-
-    console.log("CodeQL scanning enabled successfully.");
-  } catch (error) {
-    console.log(`Failed to enable CodeQL scanning: ${error.message}`);
-  }
-}
-
 async function pushWorkflowFile() {
   const workflowFile = fs.readFileSync('codeql-analysis.yml', "utf8");
   try {
@@ -87,9 +69,8 @@ async function run() {
 
   await putRequest('vulnerability-alerts') // Enable dependabot
 
-  const alerts = await octokitRequest("listAlertsForRepo");
-  console.log(`Dependabot alerts: ${alerts}`);
-  // await enableCodeQLScanning();
+  // const alerts = await octokitRequest("listAlertsForRepo");
+  // console.log(`Dependabot alerts: ${alerts}`);
   pushWorkflowFile()
 }
 
