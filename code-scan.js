@@ -70,8 +70,8 @@ async function run() {
   await putRequest('vulnerability-alerts') // Enable dependabot
 
   const alerts = await octokitRequest("listAlertsForRepo");
-  console.log(`Dependabot alerts: ${alerts}`);
-  pushWorkflowFile()
+  console.log(`Dependabot alerts: ${stringify(alerts)}`);
+  // pushWorkflowFile()
 }
 
 run();
