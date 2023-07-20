@@ -74,7 +74,8 @@ async function triggerDependabotScan() {
       owner,
       repo,
       name: 'Dependabot Scan',
-      head_branch: 'main', // Replace with the desired branch name
+      // head_branch: 'main',
+      head_sha: '788357e'
     });
 
     console.log('Dependabot scan triggered successfully.');
