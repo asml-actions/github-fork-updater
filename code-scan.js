@@ -26,11 +26,28 @@ async function octokitRequest(request) {
           requestProperties.organization = owner
           break;
     }
+    console.log(requestProperties)
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
     return response
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
+  }
+}
+
+async function createFork() {
+  console.log(`Forking ${originalOwner}/${repo} to ${owner}`);
+  try {
+    const response = await octokit.repos.createFork({
+      owner: originalOwner,
+      repo,
+      organization: owner,
+    });
+
+    const forkedRepo = response.data;
+    console.log(`Fork created successfully: ${forkedRepo.html_url}`);
+  } catch (error) {
+    console.log(`Failed to create fork: ${error.message}`);
   }
 }
 
