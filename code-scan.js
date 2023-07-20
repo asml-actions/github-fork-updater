@@ -70,7 +70,6 @@ async function run() {
   await octokitRequest("delRepo");
   await octokitRequest("createFork");
   await octokitRequest("enableDependabot");
-
   await triggerDependabotScan();
 
   const alerts = await octokitRequest("listAlertsForRepo");
