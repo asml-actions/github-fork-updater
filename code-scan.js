@@ -21,27 +21,16 @@ async function octokitRequest(request) {
   try {
     // few functions require different properties
     let requestProperties = { owner, repo };
+    switch (request){
+        case 'createFork':
+          requestProperties.organization = owner
+          break;
+    }
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
     return response
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
-  }
-}
-
-async function createFork() {
-  console.log(`Forking ${originalOwner}/${repo} to ${owner}`);
-  try {
-    const response = await octokit.repos.createFork({
-      owner: originalOwner,
-      repo,
-      organization: owner,
-    });
-
-    const forkedRepo = response.data;
-    console.log(`Fork created successfully: ${forkedRepo.html_url}`);
-  } catch (error) {
-    console.log(`Failed to create fork: ${error.message}`);
   }
 }
 
@@ -82,7 +71,7 @@ async function run() {
   //wait for repo to be deleted
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  await createFork();
+  await octokitRequest("createFork");
   let repoInfo = await octokitRequest("getRepo");
   // console.log(repoInfo)
   // repoInfo.data.
