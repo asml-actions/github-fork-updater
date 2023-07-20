@@ -10,7 +10,7 @@ permissions:
   contents: read
 env:
     fork-owner: GetTuh
-    fork-repo-name: load-available-actions 
+    repo-name: json-to-file       
     org: asml-actions-validation
     original-owner: devops-actions
     
@@ -34,5 +34,4 @@ jobs:
       - name: Run the checks
         run: |
             npm install @octokit/rest
-            echo ${{env.fork-repo-name}}
-            node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{env.fork-repo-name}} ${{env.original-owner}}
+            node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{env.repo-name}} ${{env.original-owner}}
