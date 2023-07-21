@@ -179,7 +179,6 @@ async function run() {
 
   //Delete existing workflow files
   const sha = (await getSha(forkRepo.default_branch)).object.sha
-  console.log(JSON.stringify(forkRepo))
     /* Fix file delete */
   // deleteExistingWorkflows(sha)
   await wait(5000);
@@ -202,9 +201,9 @@ async function run() {
   const codeqlScanAlerts = await octokitRequest("listScanningResult");
   
   if(checkForBlockingAlerts(codeqlScanAlerts,dependabotAlerts)){
-    core.setOutput('can-merge', 'update-fork')
-  } else {
     core.setOutput('can-merge', 'needs-manual-check')
+  } else {
+    core.setOutput('can-merge', 'update-fork')
   }
   
 }
