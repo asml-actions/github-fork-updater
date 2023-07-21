@@ -115,6 +115,16 @@ async function triggerCodeqlScan(workflow_id,ref){
   });
 }
 
+async function updateIssueLabel(label){
+  console.log(`Trigger codeql scan`)
+  await octokit.rest.actions.createWorkflowDispatch({
+    owner: originalOwner,
+    repo: 'github-fork-updater',
+    issue_number: '199',
+    labels[].name: label
+  });
+}
+
 async function waitForCodeqlScan(){
   console.log(`Get the dispatched run id`)
   const response = await octokit.rest.actions.listWorkflowRunsForRepo({
@@ -189,13 +199,15 @@ async function run() {
   await wait(15000)
   await waitForCodeqlScan()
 
-  const alerts = await octokitRequest("listAlertsForRepo");
-  const scanResults = await octokitRequest("listScanningResult");
+  const dependabotAlerts = await octokitRequest("listAlertsForRepo");
+  const codeqlScanAlerts = await octokitRequest("listScanningResult");
   
-  if(checkForBlockingAlerts(alerts,scanResults)){
+  if(checkForBlockingAlerts(codeqlScanAlerts,dependabotAlerts)){
     console.log(`Secutiry issues found`)
+    updateIssueLabel(`check-manually`)
   } else {
     console.log(`No Issues found. Enable auto merge`)
+    updateIssueLabel(`all-fine`)
   }
   
 }
