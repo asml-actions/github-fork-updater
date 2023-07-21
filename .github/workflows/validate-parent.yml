@@ -42,7 +42,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-            console.log(repoData)
+            console.log(repoData.parent.owner.login)
             console.log(`Issue Details - ${issue_id} , ${issue_title}, ${repo_name}`)
             core.setOutput(`repo-name`,repo_name)
         
