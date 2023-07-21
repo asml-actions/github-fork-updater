@@ -75,14 +75,14 @@ async function disableExistingWorkflows() {
   let workflow_ids = [];
   const workflowList = await octokit.rest.actions.listRepoWorkflows({
     owner,
-    repo,
+    repo:'create-pull-request',
   });
   workflow_ids = workflowList.data.workflows.map((item) => item.id);
   workflow_ids.forEach((workflow_id) => {
     console.log(`workflow id ${workflow_id}`)
     octokit.rest.actions.disableWorkflow({
       owner,
-      repo,
+      repo:'create-pull-request',
       workflow_id,
     });
   });
@@ -192,11 +192,10 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
 
   await wait(5000);
-  await disableExistingWorkflows()
   await putRequest("vulnerability-alerts"); // Enable dependabot
 
   await wait(5000);
-
+  await disableExistingWorkflows()
   // Push Codeql.yml file
   await pushWorkflowFile();
 
