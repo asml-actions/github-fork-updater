@@ -1,4 +1,6 @@
 const { Octokit } = require("@octokit/rest");
+const { core } = require("@actions/core");
+const { countReset } = require("console");
 const fs = require('fs');
 const token = process.argv[2];
 const repo = process.argv[3];
@@ -200,11 +202,9 @@ async function run() {
   const codeqlScanAlerts = await octokitRequest("listScanningResult");
   
   if(checkForBlockingAlerts(codeqlScanAlerts,dependabotAlerts)){
-    console.log(`Secutiry issues found`)
-    updateIssueLabel(`check-manually`)
+    core.setoutput('can-merge', 'false')
   } else {
-    console.log(`No Issues found. Enable auto merge`)
-    updateIssueLabel(`all-fine`)
+    core.setoutput('can-merge', 'true')
   }
   
 }

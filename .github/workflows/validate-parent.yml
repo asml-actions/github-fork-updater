@@ -32,6 +32,26 @@ jobs:
           organization: asml-actions-validation 
 
       - name: Run the checks
+        id: check-run
         run: |
             npm install @octokit/rest
             node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{env.repo-name}} ${{env.original-owner}}
+
+      - name: Run the checks
+        use: actions/github-script@v6
+        env:
+            can_merge: ${{ steps.check-run.outputs.can-merge }}
+        with:
+          script: |
+            const can_merge  = process.env.can_merge
+            core.log(`can-merge ? - ${can_merge}`)
+            let label = 'check-manually'
+            
+            if(can_merge == 'true'){
+              console.log('All Fine')
+              label = 'all-fine'
+            } else if(can_merge == 'false'){
+              console.log('Check issues')
+              label = 'Check issues'
+            } 
+
