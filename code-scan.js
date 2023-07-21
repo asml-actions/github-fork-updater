@@ -1,6 +1,5 @@
 const { Octokit } = require("@octokit/rest");
 const core = require("@actions/core");
-const core = require("@actions/core");
 const { countReset } = require("console");
 const fs = require('fs');
 const token = process.argv[2];
