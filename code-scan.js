@@ -16,6 +16,15 @@ const octokitFunctions = {
   listAlertsForRepo: octokit.rest.dependabot.listAlertsForRepo,
 };
 
+async function wait(milliseconds) {
+  return new Promise((_resolve) => {
+    if (typeof milliseconds !== "number") {
+      throw new Error("milliseconds not a number");
+    }
+    setTimeout(() => _resolve("done!"), milliseconds);
+  });
+}
+
 async function octokitRequest(request) {
   console.log(`Running ${request} function`);
   try {
@@ -53,7 +62,7 @@ async function getSha(ref){
 }
 
 async function deleteExistingWorkflows(sha){
-
+  console.log(`Delete existing workflows`)
   await octokit.rest.repos.deleteFile({
     owner,
     repo,
@@ -70,6 +79,7 @@ repository contents. We've notified our support staff. If this error persists,
 or if you have any questions, please contact us. 
 Temporary error?
   */
+  console.log(`Add Codeql workflow file`)
   const workflowFile = fs.readFileSync('codeql-analysis-check.yml', "utf8");
   try {
     const response = await octokit.request(
@@ -92,12 +102,14 @@ Temporary error?
 async function run() {
   await octokitRequest("delRepo");
   const forkRepo = await octokitRequest("createFork");
-  console.log(`New Repo ID: ${forkRepo.id}, Default branch: ${forkRepo.default_branch}`)
+  console.log(`New Repo ID: ${forkRepo.id}, Repo Name: ${forkRepo.name} Default branch: ${forkRepo.default_branch}`)
 
   await putRequest('vulnerability-alerts') // Enable dependabot
 
   //Delete existing workflow files
   const sha = (getSha(forkRepo.default_branch)).sha
+  console.log(`sha for the workflow files to be deleted : ${sha}`)
+
   deleteExistingWorkflows(sha)
   await wait(5000);
 
