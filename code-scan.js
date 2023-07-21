@@ -70,6 +70,7 @@ async function getSha(ref) {
 }
 
 async function disableExistingWorkflows() {
+  console.log(`disabling workflows`)
   try{
   let workflow_ids = [];
   const workflowList = await octokit.rest.actions.listRepoWorkflows({
