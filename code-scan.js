@@ -76,16 +76,16 @@ async function deleteExistingWorkflows(sha){
 
 async function pushWorkflowFile() { 
 
- let languages = await octokitRequest("listLanguages");
- languages = `[${JSON.stringify(Object.keys(languages))}]`;
- console.log(`Detected languages: ${languages}`);
+  let languages = await octokitRequest("listLanguages");
+  languages = `[${JSON.stringify(Object.keys(languages))}]`;
+  console.log(`Detected languages: ${languages}`);
 
- console.log(`Add Codeql workflow file`);
- let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
- workflowFile = workflowFile.replace('languageString',languages)
+  console.log(`Add Codeql workflow file`);
+  let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
+  workflowFile = workflowFile.replace('languageString',languages)
 
   console.log(`Add Codeql workflow file`)
-  const workflowFile = fs.readFileSync('codeql-analysis-check.yml', "utf8");
+  
   try {
     const response = await octokit.request(
       "PUT /repos/{owner}/{repo}/contents/.github/workflows/codeql-analysis-check.yml",
