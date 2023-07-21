@@ -158,16 +158,16 @@ async function run() {
   await wait(5000);
 
   // Push Codeql.yml file
-  pushWorkflowFile()
+  await pushWorkflowFile()
 
   //Trigger a scan
-  triggerCodeqlScan(`codeql-analysis-check.yml`,forkRepo.default_branch)
+  await triggerCodeqlScan(`codeql-analysis-check.yml`,forkRepo.default_branch)
   
 
   //Wait for the scan to complete
   console.log(`Wait for job to start !`)
   await wait(15000)
-  waitForCodeqlScan()
+  await waitForCodeqlScan()
 
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${JSON.stringify(alerts)})`);
