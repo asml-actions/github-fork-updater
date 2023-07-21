@@ -78,6 +78,7 @@ async function disableExistingWorkflows() {
   });
   workflow_ids = workflowList.data.workflows.map((item) => item.id);
   workflow_ids.forEach((workflow_id) => {
+    console.log(`workflow id ${workflow_id}`)
     octokit.rest.actions.disableWorkflow({
       owner,
       repo,
