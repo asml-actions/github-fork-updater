@@ -14,6 +14,7 @@ const octokitFunctions = {
   createFork: octokit.repos.createFork,
   enableDependabot: octokit.rest.repos.enableVulnerabilityAlerts,
   listAlertsForRepo: octokit.rest.dependabot.listAlertsForRepo,
+  listScanningResult: octokit.rest.codeScanning.listRecentAnalyses,
 };
 
 async function wait(milliseconds) {
@@ -107,7 +108,6 @@ async function triggerCodeqlScan(workflow_id,ref){
     workflow_id,
     ref,
   });
-  console.log(JSON.stringify(response))
 }
 
 async function waitForCodeqlScan(){
@@ -117,7 +117,6 @@ async function waitForCodeqlScan(){
     repo,
     event: 'workflow_dispatch'
   });
-  console.log(JSON.stringify(response))
 
   const run_id = response.data.workflow_runs[0].id;
   
@@ -141,17 +140,14 @@ async function waitForCodeqlScan(){
 async function run() {
   await octokitRequest("delRepo");
   const forkRepo = await octokitRequest("createFork");
-  console.log(`New Repo ID: ${forkRepo.id}, Repo Name: ${forkRepo.name} Default branch: ${forkRepo.default_branch}`)
-
+  
   await wait(5000);
   await putRequest('vulnerability-alerts') // Enable dependabot
 
   //Delete existing workflow files
   const sha = (await getSha(forkRepo.default_branch)).object.sha
 
-  console.log(`sha for the workflow files to be deleted : ${sha}`)
-
-  /* Fix file delete */
+    /* Fix file delete */
   // deleteExistingWorkflows(sha)
   await wait(5000);
 
@@ -170,7 +166,13 @@ async function run() {
   await waitForCodeqlScan()
 
   const alerts = await octokitRequest("listAlertsForRepo");
+  const scanResults = await octokitRequest("listScanningResult");
+
+  console.log(`Dependabot Result`)
   console.log(`Dependabot alerts: ${JSON.stringify(alerts)})`);
+
+  console.log(`CodeQL Scanning Result`)
+  console.log(`Codeql results: ${JSON.stringify(scanResults)})`);
   
 }
 
