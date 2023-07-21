@@ -179,7 +179,7 @@ async function run() {
 
   //Delete existing workflow files
   const sha = (await getSha(forkRepo.default_branch)).object.sha
-
+  console.log(JSON.stringify(forkRepo))
     /* Fix file delete */
   // deleteExistingWorkflows(sha)
   await wait(5000);
