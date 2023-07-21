@@ -59,19 +59,9 @@ jobs:
             can_merge: ${{ steps.check-run.outputs.can-merge }}
         with:
           script: |
-            const can_merge  = process.env.can_merge
-            console.log(`can-merge ? - ${can_merge}`)
-            let label = 'check-manually'
-            if(can_merge == 'true'){
-              console.log('All Fine')
-              label = 'update-fork'
-            } else if(can_merge == 'false'){
-              console.log('Check issues')
-              label = 'Check issues'
-            } 
+            const label  = process.env.can_merge
+            console.log(`adding label ${label`})
       
-
-
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
