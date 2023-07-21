@@ -78,7 +78,7 @@ async function deleteExistingWorkflows(sha) {
   });
 }
 
-async function pushWorkflowFile() {
+async function pushWorkflowFile(languages) {
   /*Works with postman but here it returns : 
 Error creating workflow file: RequestError [HttpError]: Unable to read Git 
 repository contents. We've notified our support staff. If this error persists, 
@@ -87,6 +87,31 @@ Temporary error?
   */
   console.log(`Add Codeql workflow file`);
   const workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
+  //inject the languages 
+  const targetLine = 29;
+  const replacementLine = `        language: ${languages}`
+  try {
+    const lines = data.split("\n");
+    if (targetLine > lines.length || targetLine < 1) {
+      console.error("Target line does not exist.");
+      return;
+    }
+
+    lines[targetLine - 1] = replacementLine;
+    const updatedYamlString = lines.join("\n");
+
+    fs.writeFile(yamlPath, updatedYamlString, "utf8", (err) => {
+      if (err) {
+        console.error("Error writing file:", err);
+        return;
+      }
+
+      console.log("Line replacement successful!");
+    });
+  } catch (error) {
+    console.error("Error parsing YAML:", error);
+  }
+// push the file
   try {
     const response = await octokit.request(
       `PUT /repos/{owner}/{repo}/contents/${yamlPath}`,
@@ -104,38 +129,6 @@ Temporary error?
     console.error("Error creating workflow file:", error);
   }
 }
-const injectLanguagesIntoYaml = (languages) => {
-  const targetLine = 29;
-  const replacementLine = `        language: ${languages}`
-  fs.readFile(yamlPath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return;
-    }
-
-    try {
-      const lines = data.split("\n");
-      if (targetLine > lines.length || targetLine < 1) {
-        console.error("Target line does not exist.");
-        return;
-      }
-
-      lines[targetLine - 1] = replacementLine;
-      const updatedYamlString = lines.join("\n");
-
-      fs.writeFile(yamlPath, updatedYamlString, "utf8", (err) => {
-        if (err) {
-          console.error("Error writing file:", err);
-          return;
-        }
-
-        console.log("Line replacement successful!");
-      });
-    } catch (error) {
-      console.error("Error parsing YAML:", error);
-    }
-  });
-};
 async function triggerCodeqlScan(workflow_id, ref) {
   console.log(`Trigger codeql scan`);
   await octokit.rest.actions.createWorkflowDispatch({
@@ -187,11 +180,9 @@ async function run() {
   let languages = await octokitRequest("listLanguages");
   languages = `[${JSON.stringify(Object.keys(languages))}]`;
   console.log(`Detected languages: ${languages}`);
-
-  injectLanguagesIntoYaml(languages)
   
   // Push Codeql.yml file
-  await pushWorkflowFile();
+  await pushWorkflowFile(languages);
 
   //Trigger a scan
   await wait(15000);
