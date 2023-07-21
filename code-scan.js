@@ -70,6 +70,7 @@ async function getSha(ref) {
 }
 
 async function disableExistingWorkflows() {
+  try{
   let workflow_ids = [];
   const workflowList = await octokit.rest.actions.listRepoWorkflows({
     owner,
@@ -83,6 +84,9 @@ async function disableExistingWorkflows() {
       workflow_id,
     });
   });
+}catch(error){
+  console.log(`Failed to disable workflows: ${error.message}`)
+}
 }
 
 async function pushWorkflowFile() {
