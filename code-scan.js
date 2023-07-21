@@ -74,12 +74,16 @@ async function deleteExistingWorkflows(sha){
 
 }
 
-async function pushWorkflowFile() { /*Works with postman but here it returns : 
-Error creating workflow file: RequestError [HttpError]: Unable to read Git 
-repository contents. We've notified our support staff. If this error persists, 
-or if you have any questions, please contact us. 
-Temporary error?
-  */
+async function pushWorkflowFile() { 
+
+ let languages = await octokitRequest("listLanguages");
+ languages = `[${JSON.stringify(Object.keys(languages))}]`;
+ console.log(`Detected languages: ${languages}`);
+
+ console.log(`Add Codeql workflow file`);
+ let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
+ workflowFile = workflowFile.replace('languageString',languages)
+
   console.log(`Add Codeql workflow file`)
   const workflowFile = fs.readFileSync('codeql-analysis-check.yml', "utf8");
   try {
