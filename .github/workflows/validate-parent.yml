@@ -37,25 +37,24 @@ jobs:
             npm install @octokit/rest @actions/core
             node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{env.repo-name}} ${{env.original-owner}}
 
-      - name: Run the checks
+      - name: Update the issue
         uses: actions/github-script@v6
         env:
             can_merge: ${{ steps.check-run.outputs.can-merge }}
         with:
           script: |
             const can_merge  = process.env.can_merge
-            console.log(`can-merge ? - ${can_merge}`)
             let label = 'check-manually'
 
             if(can_merge == 'true'){
-              console.log('All Fine')
+              console.log('No Issues detected enable auto merge')
               label = 'all-fine'
             } else if(can_merge == 'false'){
-              console.log('Check issues')
+              console.log('Security issues reported. Please check and act on it')
               label = 'check-manually'
             }
 
-            octokit.rest.issues.addLabels({
+            github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: 199,
