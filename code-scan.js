@@ -15,6 +15,7 @@ const octokitFunctions = {
   enableDependabot: octokit.rest.repos.enableVulnerabilityAlerts,
   listAlertsForRepo: octokit.rest.dependabot.listAlertsForRepo,
   listScanningResult: octokit.rest.codeScanning.listAlertsForRepo,
+  listLanguages: octokit.rest.repos.listLanguages
 };
 
 async function wait(milliseconds) {
@@ -150,6 +151,8 @@ async function run() {
     /* Fix file delete */
   // deleteExistingWorkflows(sha)
   await wait(5000);
+  const languages = octokitRequest('listLanguages')
+  console.log(`Detected languages: ${languages}`)
 
   // Push Codeql.yml file
   await pushWorkflowFile()
