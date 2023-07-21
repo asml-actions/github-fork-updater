@@ -73,7 +73,7 @@ jobs:
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: 198
+              issue_number: '198'
               labels: [`${label}`]
             })
 
