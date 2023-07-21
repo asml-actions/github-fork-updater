@@ -121,7 +121,7 @@ async function waitForCodeqlScan(){
 
   const run_id = response.data.workflow_runs[0].id;
   
-  const status = "queued"
+  let status = "queued"
   while ( status != "completed")
   {
     console.log(`Wait for scan to complete - Run id : ${run_id}`)
@@ -132,7 +132,7 @@ async function waitForCodeqlScan(){
       run_id,
     });
     if( run_status.data.status == "completed") {
-      status = "completed"
+      status = run_status.data.status
     }
   }
 
