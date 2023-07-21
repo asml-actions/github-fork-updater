@@ -40,7 +40,6 @@ async function octokitRequest(request) {
     }
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
-    console.log(`Data: ${response}`)
     return response.data;
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
@@ -153,7 +152,7 @@ async function run() {
   // deleteExistingWorkflows(sha)
   await wait(5000);
   const languages = await octokitRequest('listLanguages')
-  console.log(`Detected languages: ${languages}`)
+  console.log(`Detected languages: ${JSON.stringify(languages)}`)
 
   // Push Codeql.yml file
   await pushWorkflowFile()
