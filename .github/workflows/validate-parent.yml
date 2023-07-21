@@ -30,7 +30,7 @@ jobs:
         with:
           script: |
             const issue_id = '197' //context.issue.number
-            const issue_title = 'Parent repository for [asml-actions/dependency-review-action] has updates available' //context.issue.title
+            const issue_title = ' Parent repository for [asml-actions/issue-comment-tag] has updates available #197 ' //context.issue.title
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
             let repoData =await github.rest.repos.get({
               owner: context.repo.owner,
