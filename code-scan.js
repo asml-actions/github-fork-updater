@@ -104,6 +104,8 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
   console.log(`New Repo ID: ${forkRepo.id}, Repo Name: ${forkRepo.name} Default branch: ${forkRepo.default_branch}`)
 
+  await wait(5000);
+
   await putRequest('vulnerability-alerts') // Enable dependabot
 
   //Delete existing workflow files
