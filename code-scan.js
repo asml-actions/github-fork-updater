@@ -145,13 +145,14 @@ async function waitForCodeqlScan(){
 function checkForBlockingAlerts(codeScanningAlerts,dependabotAlerts){
   let blocking = false
   codeScanningAlerts.forEach(alert => {
-    console.log(`alert : ${alert} \n ${alert.rule}`)
+    console.log(`alert :${JSON.stringify(alert)}`)
+    
     if(alert.rule.security_severity_level == "critical" || alert.rule.security_severity_level == "high"){
       blocking = true
     }
   });
   dependabotAlerts.forEach(alert => {
-    console.log(`alert : ${alert} \n ${alert.security_advisory}`)
+    console.log(`alert :${JSON.stringify(alert)}`)
     if(alert.security_advisory.severity =="critical" || alert.security_advisory.severity =="high" ){
       blocking = true
     }
