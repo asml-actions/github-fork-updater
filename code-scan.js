@@ -151,7 +151,7 @@ async function run() {
     /* Fix file delete */
   // deleteExistingWorkflows(sha)
   await wait(5000);
-  const languages = octokitRequest('listLanguages')
+  const languages = await octokitRequest('listLanguages')
   console.log(`Detected languages: ${languages}`)
 
   // Push Codeql.yml file
