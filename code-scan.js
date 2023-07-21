@@ -104,7 +104,6 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
   console.log(`New Repo ID: ${forkRepo.id}, Repo Name: ${forkRepo.name} Default branch: ${forkRepo.default_branch}`)
 
-  await wait(5000);
 
   await putRequest('vulnerability-alerts') // Enable dependabot
 
@@ -113,7 +112,8 @@ async function run() {
 
   console.log(`sha for the workflow files to be deleted : ${sha}`)
 
-  deleteExistingWorkflows(sha)
+  /* Fix file delete */
+  // deleteExistingWorkflows(sha)
   await wait(5000);
 
   // Push Codeql.yml file
