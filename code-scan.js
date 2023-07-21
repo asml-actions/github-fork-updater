@@ -58,6 +58,7 @@ async function getSha(ref){
     repo,
     ref: `heads/${ref}`,
   });
+  console.log(JSON.stringify(response))
   return response.data;
 }
 
