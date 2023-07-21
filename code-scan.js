@@ -43,6 +43,27 @@ async function putRequest(request) { //generic function for PUT requests
   }
 }
 
+async function getSha(ref){
+  response = await octokit.rest.git.getRef({
+    owner,
+    repo,
+    ref: `heads/${ref}`,
+  });
+  return response.data;
+}
+
+async function deleteExistingWorkflows(sha){
+
+  await octokit.rest.repos.deleteFile({
+    owner,
+    repo,
+    path: ".github/workflows",
+    message: "🤖 Delete existing workflows",
+    sha,
+  });
+
+}
+
 async function pushWorkflowFile() { /*Works with postman but here it returns : 
 Error creating workflow file: RequestError [HttpError]: Unable to read Git 
 repository contents. We've notified our support staff. If this error persists, 
@@ -70,13 +91,23 @@ Temporary error?
 
 async function run() {
   await octokitRequest("delRepo");
-  await octokitRequest("createFork");
+  const forkRepo = await octokitRequest("createFork");
+  console.log(`New Repo ID: ${forkRepo.id}, Default branch: ${forkRepo.default_branch}`)
 
   await putRequest('vulnerability-alerts') // Enable dependabot
+
+  //Delete existing workflow files
+  const sha = (getSha(forkRepo.default_branch)).sha
+  deleteExistingWorkflows(sha)
+  await wait(5000);
+
+  // Push Codeql.yml file
+  pushWorkflowFile()
+
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${(alerts)}`);
 
-  pushWorkflowFile()
+  
 }
 
 run();
