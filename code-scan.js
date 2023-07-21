@@ -4,7 +4,7 @@ const token = process.argv[2];
 const repo = process.argv[3];
 const originalOwner = process.argv[4];
 const owner = "asml-actions-validation";
-
+const yamlPath = ".github/workflows/codeql-analysis-check.yml";
 const octokit = new Octokit({
   auth: token,
 });
@@ -89,11 +89,11 @@ Temporary error?
   const workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
   try {
     const response = await octokit.request(
-      "PUT /repos/{owner}/{repo}/contents/.github/workflows/codeql-analysis-check.yml",
+      `PUT /repos/{owner}/{repo}/contents/${yamlPath}`,
       {
         owner,
         repo,
-        path: ".github/workflows/codeql-analysis-check.yml",
+        path: yamlPath,
         message: "Create example workflow",
         content: Buffer.from(workflowFile).toString("base64"),
       }
@@ -104,7 +104,38 @@ Temporary error?
     console.error("Error creating workflow file:", error);
   }
 }
+const injectLanguagesIntoYaml = (languages) => {
+  const targetLine = 29;
+  const replacementLine = `        language: ${languages}`
+  fs.readFile(yamlPath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+      return;
+    }
 
+    try {
+      const lines = data.split("\n");
+      if (targetLine > lines.length || targetLine < 1) {
+        console.error("Target line does not exist.");
+        return;
+      }
+
+      lines[targetLine - 1] = replacementLine;
+      const updatedYamlString = lines.join("\n");
+
+      fs.writeFile(yamlPath, updatedYamlString, "utf8", (err) => {
+        if (err) {
+          console.error("Error writing file:", err);
+          return;
+        }
+
+        console.log("Line replacement successful!");
+      });
+    } catch (error) {
+      console.error("Error parsing YAML:", error);
+    }
+  });
+};
 async function triggerCodeqlScan(workflow_id, ref) {
   console.log(`Trigger codeql scan`);
   await octokit.rest.actions.createWorkflowDispatch({
@@ -154,11 +185,11 @@ async function run() {
   // deleteExistingWorkflows(sha)
   await wait(5000);
   let languages = await octokitRequest("listLanguages");
-  languages = `[${Object.keys(languages)
-    .map((item) => `'${item}'`)
-    .toString()}]`;
+  languages = `[${JSON.stringify(Object.keys(languages))}]`;
   console.log(`Detected languages: ${languages}`);
 
+  injectLanguagesIntoYaml(languages)
+  
   // Push Codeql.yml file
   await pushWorkflowFile();
 
