@@ -45,14 +45,12 @@ jobs:
         
 
       - name: Run the checks
-        if: 1==2
         id: check-run
         run: |
             npm install @octokit/rest @actions/core
             node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{steps.get_issue_details.outputs.repo-name}} ${{env.original-owner}}
 
       - name: Update the issue
-        if: 1==2
         uses: actions/github-script@v6
         env:
             can_merge: ${{ steps.check-run.outputs.can-merge }}
