@@ -93,10 +93,51 @@ Temporary error?
       }
     );
 
+    console.log(JSON.stringify($response))
+
     console.log("Workflow file created successfully");
   } catch (error) {
     console.error("Error creating workflow file:", error);
   }
+}
+
+async function triggerCodeqlScan(workflow_id,ref){
+  console.log(`Trigger codeql scan`)
+  octokit.rest.actions.createWorkflowDispatch({
+    owner,
+    repo,
+    workflow_id,
+    ref,
+  });
+  console.log(JSON.stringify($response))
+}
+
+async function waitForCodeqlScan(){
+  console.log(`Get the dispatched run id`)
+  const response = await octokit.rest.actions.listWorkflowRunsForRepo({
+    owner,
+    repo,
+    event: 'workflow_dispatch'
+  });
+  console.log(JSON.stringify($response))
+
+  const run_id = response.data.workflow_runs[0].id;
+  
+  const status = "queued"
+  while ( status != "completed")
+  {
+    console.log(`Wait for scan to complete - Run id : ${run_id}`)
+    await wait(15000)
+    const run_status = await octokit.rest.actions.getWorkflowRun({
+      owner,
+      repo,
+      run_id,
+    });
+    if( run_status.data.status == "completed") {
+      status = "completed"
+    }
+  }
+
 }
 
 async function run() {
@@ -119,8 +160,17 @@ async function run() {
   // Push Codeql.yml file
   pushWorkflowFile()
 
+  //Trigger a scan
+  triggerCodeqlScan(`codeql-analysis-check.yml`,`refs/heads/${forkRepo.default_branch}`)
+  
+
+  //Wait for the scan to complete
+  console.log(`Wait for job to start !`)
+  await wait(15000)
+  waitForCodeqlScan()
+
   const alerts = await octokitRequest("listAlertsForRepo");
-  console.log(`Dependabot alerts: ${(alerts)}`);
+  console.log(`Dependabot alerts: ${JSON.stringify(alerts)})`);
 
   
 }
