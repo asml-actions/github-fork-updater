@@ -192,7 +192,7 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
 
   await wait(5000);
-  disableExistingWorkflows()
+  await disableExistingWorkflows()
   await putRequest("vulnerability-alerts"); // Enable dependabot
 
   await wait(5000);
