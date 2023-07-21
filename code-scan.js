@@ -152,8 +152,6 @@ async function run() {
   /* Fix file delete */
   // deleteExistingWorkflows(sha)
   await wait(5000);
-
-  injectLanguagesIntoYaml(languages)
   
   // Push Codeql.yml file
   await pushWorkflowFile();
