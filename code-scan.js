@@ -58,7 +58,6 @@ async function getSha(ref){
     repo,
     ref: `heads/${ref}`,
   });
-  console.log(JSON.stringify(response))
   return response.data;
 }
 
@@ -67,7 +66,7 @@ async function deleteExistingWorkflows(sha){
   await octokit.rest.repos.deleteFile({
     owner,
     repo,
-    path: ".github/workflows",
+    path: ".github/workflows/codeql-analysis.yml",
     message: "🤖 Delete existing workflows",
     sha,
   });
@@ -110,9 +109,8 @@ async function run() {
   await putRequest('vulnerability-alerts') // Enable dependabot
 
   //Delete existing workflow files
-  const shaRes = getSha(forkRepo.default_branch)
-  console.log(`Sha is : ${JSON.stringify(shaRes)}`)
-  const sha =  `209b2ef575481bee3127134a43ec6093c674b2a3`
+  const sha = await (getSha(forkRepo.default_branch)).object.sha
+
   console.log(`sha for the workflow files to be deleted : ${sha}`)
 
   deleteExistingWorkflows(sha)
