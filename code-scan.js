@@ -14,7 +14,7 @@ const octokitFunctions = {
   createFork: octokit.repos.createFork,
   enableDependabot: octokit.rest.repos.enableVulnerabilityAlerts,
   listAlertsForRepo: octokit.rest.dependabot.listAlertsForRepo,
-  listScanningResult: octokit.rest.codeScanning.listRecentAnalyses,
+  listScanningResult: octokit.rest.codeScanning.codeScanning.listAlertsForRepo,
 };
 
 async function wait(milliseconds) {
