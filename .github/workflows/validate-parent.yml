@@ -52,6 +52,13 @@ jobs:
               label = 'all-fine'
             } else if(can_merge == 'false'){
               console.log('Check issues')
-              label = 'Check issues'
-            } 
+              label = 'check-manually'
+            }
+
+            octokit.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: 199,
+              labels: [`${label}`]
+            })
 
