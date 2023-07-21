@@ -78,7 +78,7 @@ async function deleteExistingWorkflows(sha){
 async function pushWorkflowFile() { 
 
   let languages = await octokitRequest("listLanguages");
-  languages = `[${JSON.stringify(Object.keys(languages))}]`;
+  languages = `${JSON.stringify(Object.keys(languages))}`;
   console.log(`Detected languages: ${languages}`);
 
   console.log(`Add Codeql workflow file`);
