@@ -161,7 +161,7 @@ async function run() {
   pushWorkflowFile()
 
   //Trigger a scan
-  triggerCodeqlScan(`codeql-analysis-check.yml`,`refs/heads/${forkRepo.default_branch}`)
+  triggerCodeqlScan(`codeql-analysis-check.yml`,forkRepo.default_branch)
   
 
   //Wait for the scan to complete
