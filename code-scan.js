@@ -142,13 +142,11 @@ function checkForBlockingAlerts(codeScanningAlerts,dependabotAlerts){
   codeScanningAlerts.forEach(alert => {
     if(alert.rule.security_severity_level == "critical" || alert.rule.security_severity_level == "high"){
       blocking = true
-      return
     }
   });
   dependabotAlerts.forEach(alert => {
     if(alert.security_advisory.severity =="critical" || alert.security_advisory.severity =="high" ){
       blocking = true
-      return
     }
   });
 
