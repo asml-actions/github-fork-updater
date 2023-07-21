@@ -78,40 +78,14 @@ async function deleteExistingWorkflows(sha) {
   });
 }
 
-async function pushWorkflowFile(languages) {
-  /*Works with postman but here it returns : 
-Error creating workflow file: RequestError [HttpError]: Unable to read Git 
-repository contents. We've notified our support staff. If this error persists, 
-or if you have any questions, please contact us. 
-Temporary error?
-  */
+async function pushWorkflowFile() {
+  let languages = await octokitRequest("listLanguages");
+  languages = `[${JSON.stringify(Object.keys(languages))}]`;
+  console.log(`Detected languages: ${languages}`);
+
   console.log(`Add Codeql workflow file`);
   const workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
-  //inject the languages 
-  const targetLine = 29;
-  const replacementLine = `        language: ${languages}`
-  try {
-    const lines = data.split("\n");
-    if (targetLine > lines.length || targetLine < 1) {
-      console.error("Target line does not exist.");
-      return;
-    }
-
-    lines[targetLine - 1] = replacementLine;
-    const updatedYamlString = lines.join("\n");
-
-    fs.writeFile(yamlPath, updatedYamlString, "utf8", (err) => {
-      if (err) {
-        console.error("Error writing file:", err);
-        return;
-      }
-
-      console.log("Line replacement successful!");
-    });
-  } catch (error) {
-    console.error("Error parsing YAML:", error);
-  }
-// push the file
+  workflowFile = workflowFile.replace('languageString',languages)
   try {
     const response = await octokit.request(
       `PUT /repos/{owner}/{repo}/contents/${yamlPath}`,
@@ -129,6 +103,7 @@ Temporary error?
     console.error("Error creating workflow file:", error);
   }
 }
+
 async function triggerCodeqlScan(workflow_id, ref) {
   console.log(`Trigger codeql scan`);
   await octokit.rest.actions.createWorkflowDispatch({
@@ -177,12 +152,11 @@ async function run() {
   /* Fix file delete */
   // deleteExistingWorkflows(sha)
   await wait(5000);
-  let languages = await octokitRequest("listLanguages");
-  languages = `[${JSON.stringify(Object.keys(languages))}]`;
-  console.log(`Detected languages: ${languages}`);
+
+  injectLanguagesIntoYaml(languages)
   
   // Push Codeql.yml file
-  await pushWorkflowFile(languages);
+  await pushWorkflowFile();
 
   //Trigger a scan
   await wait(15000);
