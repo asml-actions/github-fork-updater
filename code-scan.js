@@ -186,9 +186,9 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
 
   await wait(5000);
+  disableExistingWorkflows()
   await putRequest("vulnerability-alerts"); // Enable dependabot
 
-  disableExistingWorkflows()
   await wait(5000);
 
   // Push Codeql.yml file
