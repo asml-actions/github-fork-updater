@@ -152,7 +152,7 @@ async function run() {
   // deleteExistingWorkflows(sha)
   await wait(5000);
   let languages = await octokitRequest('listLanguages')
-  languages = Object.keys(languages)
+  languages = Object.keys(languages).toString()
   console.log(`Detected languages: ${languages}`)
 
   // Push Codeql.yml file
