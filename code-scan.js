@@ -109,7 +109,7 @@ async function run() {
   await putRequest('vulnerability-alerts') // Enable dependabot
 
   //Delete existing workflow files
-  const sha = (getSha(forkRepo.default_branch)).sha
+  const sha = (getSha(forkRepo.default_branch)).object.sha
   console.log(`sha for the workflow files to be deleted : ${sha}`)
 
   deleteExistingWorkflows(sha)
