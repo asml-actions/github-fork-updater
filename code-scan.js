@@ -119,7 +119,7 @@ async function waitForCodeqlScan(){
     repo,
     event: 'workflow_dispatch'
   });
-  console.log(JSON.stringify($response))
+  console.log(JSON.stringify(response))
 
   const run_id = response.data.workflow_runs[0].id;
   
