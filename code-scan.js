@@ -140,7 +140,7 @@ async function waitForCodeqlScan(){
 function checkForBlockingAlerts(codeScanningAlerts,dependabotAlerts){
   let blocking = false
   codeScanningAlerts.forEach(alert => {
-    if(alert.rule.name.security_severity_level == "critical" || alert.rule.name.security_severity_level == "high"){
+    if(alert.rule.security_severity_level == "critical" || alert.rule.security_severity_level == "high"){
       blocking = true
       return
     }
