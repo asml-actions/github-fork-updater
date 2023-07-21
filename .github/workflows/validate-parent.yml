@@ -35,6 +35,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            # Object.keys(context.issue).length
             const issue_id = '198' //context.issue.number
             const issue_title = 'Parent repository for [asml-actions/dependency-review-action] has updates available' //context.issue.title
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
@@ -73,7 +74,7 @@ jobs:
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: 198
               labels: [`${label}`]
             })
 
