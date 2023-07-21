@@ -93,8 +93,6 @@ Temporary error?
       }
     );
 
-    console.log(JSON.stringify($response))
-
     console.log("Workflow file created successfully");
   } catch (error) {
     console.error("Error creating workflow file:", error);
@@ -103,7 +101,7 @@ Temporary error?
 
 async function triggerCodeqlScan(workflow_id,ref){
   console.log(`Trigger codeql scan`)
-  octokit.rest.actions.createWorkflowDispatch({
+  await octokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
     workflow_id,
@@ -160,7 +158,9 @@ async function run() {
   // Push Codeql.yml file
   await pushWorkflowFile()
 
+  
   //Trigger a scan
+  await wait(15000);
   await triggerCodeqlScan(`codeql-analysis-check.yml`,forkRepo.default_branch)
   
 
@@ -171,7 +171,6 @@ async function run() {
 
   const alerts = await octokitRequest("listAlertsForRepo");
   console.log(`Dependabot alerts: ${JSON.stringify(alerts)})`);
-
   
 }
 
