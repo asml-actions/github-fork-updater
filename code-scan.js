@@ -98,8 +98,8 @@ async function pushWorkflowFile() {
       {
         owner,
         repo,
-        path: ".github/workflows/codeql-analysis-check.yml",
-        message: "Create example workflow",
+        path: ".github/workflows/check-and-validate-codeql.yml",
+        message: "Inject codeql workflow",
         content: Buffer.from(workflowFile).toString("base64"),
       }
     );
