@@ -9,10 +9,9 @@ permissions:
   issues: write
   contents: read
 env:
-    fork-owner: GetTuh
-    repo-name: json-to-file       
-    org: asml-actions-validation
-    original-owner: devops-actions
+  repo-name: json-to-file       
+  org: asml-actions-validation
+  original-owner: devops-actions
     
     
 
@@ -29,15 +28,30 @@ jobs:
         with:
           application_id: ${{ secrets.VALIDATION_APP_ID }}
           application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
-          organization: asml-actions-validation 
+          organization: asml-actions-validation
+      
+      - name: Get issue details
+        id: get_issue_details
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue_id = '198' //context.issue.number
+            const issue_title = 'Parent repository for [asml-actions/dependency-review-action] has updates available' //context.issue.title
+            const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
+
+            console.log(`Issue Details - ${issue_id} , ${issue_title}, ${repo_name}`)
+            core.setOutput(`repo-name`,repo_name)
+        
 
       - name: Run the checks
+        if: 1==2
         id: check-run
         run: |
             npm install @octokit/rest @actions/core
-            node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{env.repo-name}} ${{env.original-owner}}
+            node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{steps.get_issue_details.outputs.repo-name}} ${{env.original-owner}}
 
       - name: Update the issue
+        if: 1==2
         uses: actions/github-script@v6
         env:
             can_merge: ${{ steps.check-run.outputs.can-merge }}
@@ -57,7 +71,7 @@ jobs:
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: 199,
+              issue_number: context.issue.number,
               labels: [`${label}`]
             })
 
