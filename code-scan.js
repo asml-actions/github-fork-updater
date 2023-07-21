@@ -84,7 +84,7 @@ async function pushWorkflowFile() {
   console.log(`Detected languages: ${languages}`);
 
   console.log(`Add Codeql workflow file`);
-  const workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
+  let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
   workflowFile = workflowFile.replace('languageString',languages)
   try {
     const response = await octokit.request(
