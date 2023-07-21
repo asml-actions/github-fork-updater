@@ -42,10 +42,10 @@ jobs:
               owner: context.repo.owner,
               repo: repo_name
             });
-            console.log(repoData.data.parent.owner.login)
+            originalOwner = repoData.data.parent.owner.login
             console.log(`Issue Details - ${issue_id} , ${issue_title}, ${repo_name}`)
             core.setOutput(`repo-name`,repo_name)
-        
+            core.setOutput(`original-owner`,originalOwner)
 
       - name: Run the checks
         id: check-run
