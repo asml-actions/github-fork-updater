@@ -118,7 +118,7 @@ async function triggerCodeqlScan(workflow_id,ref){
 async function updateIssueLabel(label){
   console.log(`Update the issue`)
   await octokit.rest.issues.addLabels({
-    owner: originalOwner,
+    owner: 'asml-actions',
     repo: 'github-fork-updater',
     issue_number: '199',
     labels: [ `${label}` ]
