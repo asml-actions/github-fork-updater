@@ -34,7 +34,7 @@ jobs:
       - name: Run the checks
         id: check-run
         run: |
-            npm install @octokit/rest
+            npm install @octokit/rest @actions/core
             node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{env.repo-name}} ${{env.original-owner}}
 
       - name: Run the checks
