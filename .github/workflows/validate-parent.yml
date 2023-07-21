@@ -38,7 +38,7 @@ jobs:
             const issue_id = '198' //context.issue.number
             const issue_title = 'Parent repository for [asml-actions/dependency-review-action] has updates available' //context.issue.title
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
-            let repoData = github.rest.repos.get({
+            let repoData =await github.rest.repos.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
