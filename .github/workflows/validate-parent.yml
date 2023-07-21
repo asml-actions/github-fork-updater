@@ -60,7 +60,7 @@ jobs:
         with:
           script: |
             const label  = process.env.can_merge
-            console.log(`adding label ${label`})
+            console.log(`adding label ${label}`)
       
             github.rest.issues.addLabels({
               owner: context.repo.owner,
