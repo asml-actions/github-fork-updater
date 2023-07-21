@@ -121,7 +121,7 @@ async function updateIssueLabel(label){
     owner: originalOwner,
     repo: 'github-fork-updater',
     issue_number: '199',
-    labels: [ `"${label}"` ],
+    labels: [ `${label}` ]
   });
 }
 
