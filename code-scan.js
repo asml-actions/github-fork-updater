@@ -111,8 +111,8 @@ async function run() {
 
   //Delete existing workflow files
   const shaRes = getSha(forkRepo.default_branch)
-  console.log(JSON.stringify(shaRes))
-  const sha = shaRes.object.sha
+  console.log(`Sha is : ${JSON.stringify(shaRes)}`)
+  const sha =  `209b2ef575481bee3127134a43ec6093c674b2a3`
   console.log(`sha for the workflow files to be deleted : ${sha}`)
 
   deleteExistingWorkflows(sha)
