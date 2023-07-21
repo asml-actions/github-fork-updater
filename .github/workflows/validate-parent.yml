@@ -44,7 +44,7 @@ jobs:
         with:
           script: |
             const can_merge  = process.env.can_merge
-            core.log(`can-merge ? - ${can_merge}`)
+            console.log(`can-merge ? - ${can_merge}`)
             let label = 'check-manually'
 
             if(can_merge == 'true'){
