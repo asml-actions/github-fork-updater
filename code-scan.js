@@ -116,8 +116,8 @@ async function triggerCodeqlScan(workflow_id,ref){
 }
 
 async function updateIssueLabel(label){
-  console.log(`Trigger codeql scan`)
-  await octokit.rest.actions.createWorkflowDispatch({
+  console.log(`Update the issue`)
+  await octokit.rest.issues.addLabels({
     owner: originalOwner,
     repo: 'github-fork-updater',
     issue_number: '199',
@@ -154,15 +154,12 @@ async function waitForCodeqlScan(){
 
 function checkForBlockingAlerts(codeScanningAlerts,dependabotAlerts){
   let blocking = false
-  codeScanningAlerts.forEach(alert => {
-    console.log(`alert :${JSON.stringify(alert)}`)
-    
+  codeScanningAlerts.forEach(alert => {   
     if(alert.rule.security_severity_level == "critical" || alert.rule.security_severity_level == "high"){
       blocking = true
     }
   });
   dependabotAlerts.forEach(alert => {
-    console.log(`alert :${JSON.stringify(alert)}`)
     if(alert.security_advisory.severity =="critical" || alert.security_advisory.severity =="high" ){
       blocking = true
     }
