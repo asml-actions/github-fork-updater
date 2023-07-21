@@ -1,7 +1,6 @@
 name: Validate parent of fork
 
 on:
-  push:
   issues:
     types: [opened]
 
@@ -29,8 +28,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const issue_id = '197' //context.issue.number
-            const issue_title = ' Parent repository for [asml-actions/issue-comment-tag] has updates available #197 ' //context.issue.title
+            const issue_id = context.issue.number
+            const issue_title = context.issue.title
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
             let repoData =await github.rest.repos.get({
               owner: context.repo.owner,
@@ -59,7 +58,7 @@ jobs:
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: 197,
+              issue_number: context.issue.number,
               labels: [`${label}`]
             })
 

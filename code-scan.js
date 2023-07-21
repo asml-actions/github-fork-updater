@@ -69,26 +69,16 @@ async function getSha(ref) {
   return response.data;
 }
 
-async function disableExistingWorkflows() {
-  console.log(`disabling workflows`)
-  try{
-  let workflow_ids = [];
-  const workflowList = await octokit.rest.actions.listRepoWorkflows({
+async function deleteExistingWorkflows(sha){
+  console.log(`Delete existing workflows`)
+  await octokit.rest.repos.deleteFile({
     owner,
-    repo:'create-pull-request',
+    repo,
+    path: ".github/workflows/codeql-analysis.yml",
+    message: "🤖 Delete existing workflows",
+    sha,
   });
-  workflow_ids = workflowList.data.workflows.map((item) => item.id);
-  workflow_ids.forEach((workflow_id) => {
-    console.log(`workflow id ${workflow_id}`)
-    octokit.rest.actions.disableWorkflow({
-      owner,
-      repo:'create-pull-request',
-      workflow_id,
-    });
-  });
-}catch(error){
-  console.log(`Failed to disable workflows: ${error.message}`)
-}
+
 }
 
 async function pushWorkflowFile() {
@@ -127,16 +117,6 @@ async function triggerCodeqlScan(workflow_id, ref) {
     repo,
     workflow_id,
     ref,
-  });
-}
-
-async function updateIssueLabel(label) {
-  console.log(`Update the issue`);
-  await octokit.rest.issues.addLabels({
-    owner: "asml-actions",
-    repo: "github-fork-updater",
-    issue_number: "199",
-    labels: [`${label}`],
   });
 }
 
@@ -195,7 +175,9 @@ async function run() {
   await putRequest("vulnerability-alerts"); // Enable dependabot
 
   await wait(5000);
-  await disableExistingWorkflows()
+
+  // await disableExistingWorkflows()
+
   // Push Codeql.yml file
   await pushWorkflowFile();
 
