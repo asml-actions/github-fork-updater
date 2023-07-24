@@ -118,7 +118,7 @@ async function triggerCodeqlScan(workflow_id, ref) {
     workflow_id,
     ref,
   });
-  console.los(JSON.stringify(response))
+  console.log(JSON.stringify(response))
 }
 
 async function waitForCodeqlScan() {
