@@ -69,8 +69,8 @@ async function getSha(ref) {
   return response.data;
 }
 
-async function deleteExistingWorkflows(sha){
-  console.log(`Delete existing workflows`)
+async function deleteExistingWorkflows(sha) {
+  console.log(`Delete existing workflows`);
   await octokit.rest.repos.deleteFile({
     owner,
     repo,
@@ -78,7 +78,6 @@ async function deleteExistingWorkflows(sha){
     message: "🤖 Delete existing workflows",
     sha,
   });
-
 }
 
 async function pushWorkflowFile() {
@@ -118,7 +117,7 @@ async function triggerCodeqlScan(workflow_id, ref) {
     workflow_id,
     ref,
   });
-  console.log(JSON.stringify(response))
+  return response.status;
 }
 
 async function waitForCodeqlScan() {
@@ -184,20 +183,26 @@ async function run() {
 
   //Trigger a scan
   await wait(15000);
-  await triggerCodeqlScan(`codeql-analysis-check.yml`, forkRepo.default_branch);
+  const codeqlStatus = await triggerCodeqlScan(
+    `codeql-analysis-check.yml`,
+    forkRepo.default_branch
+  );
+  if (codeqlStatus == 204) {
+    //Wait for the scan to complete
+    console.log(`Wait for job to start !`);
+    await wait(15000);
+    await waitForCodeqlScan();
 
-  //Wait for the scan to complete
-  console.log(`Wait for job to start !`);
-  await wait(15000);
-  await waitForCodeqlScan();
+    const dependabotAlerts = await octokitRequest("listAlertsForRepo");
+    const codeqlScanAlerts = await octokitRequest("listScanningResult");
 
-  const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-  const codeqlScanAlerts = await octokitRequest("listScanningResult");
-
-  if (checkForBlockingAlerts(codeqlScanAlerts, dependabotAlerts)) {
-    core.setOutput("can-merge", "needs-manual-check");
+    if (checkForBlockingAlerts(codeqlScanAlerts, dependabotAlerts)) {
+      core.setOutput("can-merge", "needs-manual-check");
+    } else {
+      core.setOutput("can-merge", "update-fork");
+    }
   } else {
-    core.setOutput("can-merge", "update-fork");
+    core.setOutput("can-merge", "needs-manual-check");
   }
 }
 
