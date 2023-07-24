@@ -47,12 +47,13 @@ async function octokitRequest(request) {
   }
 }
 
-async function putRequest(request) {
+async function putRequest(request,extraProps) {
   //generic function for PUT requests
   try {
     await octokit.request(`PUT /repos/{owner}/{repo}/${request}`, {
       owner,
       repo,
+      ...extraProps
     });
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
@@ -171,7 +172,7 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
 
   await wait(5000);
-  await putRequest("vulnerability-alerts"); // Enable dependabot
+  await putRequest("vulnerability-alerts",{}); // Enable dependabot
 
   await wait(5000);
 
