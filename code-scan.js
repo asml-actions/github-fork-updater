@@ -5,7 +5,7 @@ const fs = require("fs");
 const token = process.argv[2];
 const repo = process.argv[3];
 const originalOwner = process.argv[4];
-const owner = "asml-actions-validation";
+const owner = process.argv[5]
 console.log(`repo name is ${repo}, original owner ${originalOwner}`);
 const octokit = new Octokit({
   auth: token,
