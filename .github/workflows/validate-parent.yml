@@ -1,7 +1,6 @@
 name: Validate parent of fork
 
 on:
-  push:
   issues:
     types: [opened]
 
