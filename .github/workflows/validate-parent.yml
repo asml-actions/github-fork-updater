@@ -21,7 +21,7 @@ jobs:
         name: Get token from GitHub App for validation
         id: get-validation-token
         with:
-          application_id: ${{ vars.VALIDATION_APP_ID }}
+          application_id: ${{ secrets.VALIDATION_APP_ID }}
           application_private_key: ${{ secrets.VALIDATION_APP_TOKEN }}
           organization: ${{vars.VALIDATION_ORG}}
       
