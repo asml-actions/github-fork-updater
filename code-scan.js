@@ -5,7 +5,7 @@ const fs = require("fs");
 const token = process.argv[2];
 const repo = process.argv[3];
 const originalOwner = process.argv[4];
-const owner = process.argv[5]
+const owner = process.argv[5];
 const octokit = new Octokit({
   auth: token,
 });
@@ -47,13 +47,13 @@ async function octokitRequest(request) {
   }
 }
 
-async function putRequest(request,extraProps) {
+async function putRequest(request, extraProps) {
   //generic function for PUT requests
   try {
     await octokit.request(`PUT /repos/{owner}/{repo}/${request}`, {
       owner,
       repo,
-      ...extraProps
+      ...extraProps,
     });
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
@@ -92,17 +92,11 @@ async function pushWorkflowFile() {
   console.log(`Add Codeql workflow file`);
 
   try {
-    const response = await octokit.request(
-      "PUT /repos/{owner}/{repo}/contents/.github/workflows/codeql-analysis-check.yml",
-      {
-        owner,
-        repo,
-        path: ".github/workflows/check-and-validate-codeql.yml",
-        message: "Inject codeql workflow",
-        content: Buffer.from(workflowFile).toString("base64"),
-      }
-    );
-
+    await putRequest("contents/.github/workflows/codeql-analysis-check.yml", {
+      path: ".github/workflows/check-and-validate-codeql.yml",
+      message: "Inject codeql workflow",
+      content: Buffer.from(workflowFile).toString("base64"),
+    });
     console.log("Workflow file created successfully");
   } catch (error) {
     console.error("Error creating workflow file:", error);
@@ -172,7 +166,7 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
 
   await wait(5000);
-  await putRequest("vulnerability-alerts",{}); // Enable dependabot
+  await putRequest("vulnerability-alerts", {}); // Enable dependabot
 
   await wait(5000);
 
