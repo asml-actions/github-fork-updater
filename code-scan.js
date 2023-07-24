@@ -112,12 +112,13 @@ async function pushWorkflowFile() {
 
 async function triggerCodeqlScan(workflow_id, ref) {
   console.log(`Trigger codeql scan`);
-  await octokit.rest.actions.createWorkflowDispatch({
+  const response = await octokit.rest.actions.createWorkflowDispatch({
     owner,
     repo,
     workflow_id,
     ref,
   });
+  console.los(JSON.stringify(response))
 }
 
 async function waitForCodeqlScan() {
