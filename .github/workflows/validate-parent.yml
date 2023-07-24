@@ -58,9 +58,9 @@ jobs:
             console.log(`adding label ${label}`)
       
             github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
+              owner: 'asml-actions', //context.repo.owner,
+              repo: 'issue-comment-tag ',//context.repo.repo,
+              issue_number: 197,//context.issue.number,
               labels: [`${label}`]
             })
 
