@@ -2,6 +2,7 @@ const { Octokit } = require("@octokit/rest");
 const core = require("@actions/core");
 const { countReset } = require("console");
 const fs = require("fs");
+const { fork } = require("child_process");
 const token = process.argv[2];
 const repo = process.argv[3];
 const originalOwner = process.argv[4];
@@ -166,6 +167,7 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
 
   await wait(5000);
+  console.log(`ref name for default branch ${forkRepo.default_branch}`)
   await putRequest("vulnerability-alerts", {}); // Enable dependabot
 
   await wait(5000);
