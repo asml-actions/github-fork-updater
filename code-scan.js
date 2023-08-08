@@ -182,7 +182,7 @@ async function run() {
   await wait(15000);
   const codeqlStatus = await triggerCodeqlScan(
     `codeql-analysis-check.yml`,
-    forkRepo.default_branch
+    forkRepo.parent.default_branch
   );
   if (codeqlStatus == 204) {
     //Wait for the scan to complete
