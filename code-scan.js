@@ -26,7 +26,7 @@ async function wait(milliseconds) {
   });
 }
 
-async function octokitRequest(request, extraArgs = None) {
+async function octokitRequest(request, extraArgs = '') {
   console.log(`Running ${request} function`);
   try {
     // few functions require different properties
