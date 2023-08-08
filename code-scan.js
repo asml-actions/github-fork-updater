@@ -15,6 +15,9 @@ const octokitFunctions = {
   listAlertsForRepo: octokit.rest.dependabot.listAlertsForRepo,
   listScanningResult: octokit.rest.codeScanning.listAlertsForRepo,
   listLanguages: octokit.rest.repos.listLanguages,
+  triggerCodeqlScan: octokit.rest.actions.createWorkflowDispatch,
+  listWorkflowRuns: octokit.rest.actions.listWorkflowRunsForRepo,
+  getWorkflowRun: octokit.rest.actions.listWorkflowRunsForRepo,
 };
 
 async function wait(milliseconds) {
@@ -38,7 +41,7 @@ async function octokitRequest(request, extraArgs = {}) {
   }
 }
 
-async function putRequest(request, extraProps) {
+async function putRequest(request, extraProps={}) {
   //generic function for PUT requests
   try {
     await octokit.request(`PUT /repos/{owner}/{repo}/${request}`, {
@@ -76,9 +79,7 @@ async function pushWorkflowFile() {
 
 async function waitForCodeqlScan() {
   console.log(`Get the dispatched run id`);
-  const response = await octokit.rest.actions.listWorkflowRunsForRepo({
-    owner,
-    repo,
+  const response = await octokitRequest("listWorkflowRuns", {
     event: "workflow_dispatch",
   });
 
@@ -88,9 +89,7 @@ async function waitForCodeqlScan() {
   while (status != "completed") {
     console.log(`Wait for scan to complete - Run id : ${run_id}`);
     await wait(15000);
-    const run_status = await octokit.rest.actions.getWorkflowRun({
-      owner,
-      repo,
+    const run_status = await octokitRequest("listWorkflowRunsForRepo", {
       run_id,
     });
     if (run_status.data.status == "completed") {
@@ -129,12 +128,10 @@ async function run() {
   });
 
   await wait(5000);
-  await putRequest("vulnerability-alerts", {}); // Enable dependabot
+  await putRequest("vulnerability-alerts"); // Enable dependabot
 
   await wait(5000);
-
-  // await disableExistingWorkflows()
-
+  
   // Push Codeql.yml file
   await pushWorkflowFile();
 
