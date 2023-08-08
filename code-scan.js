@@ -141,6 +141,7 @@ async function run() {
     workflow_id: `codeql-analysis-check.yml`,
     ref: forkRepo.data.parent.default_branch,
   });
+  console.log(codeqlStatus)
   if (codeqlStatus == 204) {
     //Wait for the scan to complete
     console.log(`Wait for job to start !`);
