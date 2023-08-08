@@ -17,7 +17,7 @@ const octokitFunctions = {
   listLanguages: octokit.rest.repos.listLanguages,
   triggerCodeqlScan: octokit.rest.actions.createWorkflowDispatch,
   listWorkflowRuns: octokit.rest.actions.listWorkflowRunsForRepo,
-  getWorkflowRun: octokit.rest.actions.listWorkflowRunsForRepo,
+  getWorkflowRun: octokit.rest.actions.getWorkflowRun,
 };
 
 async function wait(milliseconds) {
@@ -91,7 +91,6 @@ async function waitForCodeqlScan() {
     const run_status = await octokitRequest("listWorkflowRunsForRepo", {
       run_id,
     });
-    console.log(run_status)
     if (run_status.data.status == "completed") {
       status = run_status.data.status;
     }
