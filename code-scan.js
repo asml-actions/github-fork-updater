@@ -88,7 +88,7 @@ async function waitForCodeqlScan() {
   while (status != "completed") {
     console.log(`Wait for scan to complete - Run id : ${run_id}`);
     await wait(15000);
-    const run_status = await octokitRequest("listWorkflowRunsForRepo", {
+    const run_status = await octokitRequest("getWorkflowRun", {
       run_id,
     });
     if (run_status.data.status == "completed") {
