@@ -1,6 +1,8 @@
 name: Validate parent of fork
 
 on:
+  push: 
+    branches: ref-name-fix
   issues:
     types: [opened]
 
@@ -36,8 +38,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const issue_id = ${{ github.event.issue.number }}
-            const issue_title = `${{ github.event.issue.title }}`
+            const issue_id = 179
+            const issue_title = `Parent repository for [asml-actions/super-linter] has updates available`
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
             let repoData =await github.rest.repos.get({
               owner: context.repo.owner,
@@ -67,6 +69,6 @@ jobs:
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: 179,
               labels: [`${label}`]
             })
