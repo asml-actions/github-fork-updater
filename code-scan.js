@@ -29,7 +29,7 @@ async function wait(milliseconds) {
 async function octokitRequest(request, extraArgs = {}) {
   console.log(`Running ${request} function`);
   try {
-    const requestProperties = { owner, repo ,...extraArgs};
+    const requestProperties = { owner, repo, ...extraArgs };
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
     return response.data;
@@ -72,17 +72,6 @@ async function pushWorkflowFile() {
   } catch (error) {
     console.error("Error creating workflow file:", error);
   }
-}
-
-async function triggerCodeqlScan(workflow_id, ref) {
-  console.log(`Trigger codeql scan`);
-  const response = await octokit.rest.actions.createWorkflowDispatch({
-    owner,
-    repo,
-    workflow_id,
-    ref,
-  });
-  return response.status;
 }
 
 async function waitForCodeqlScan() {
@@ -151,10 +140,10 @@ async function run() {
 
   //Trigger a scan
   await wait(15000);
-  const codeqlStatus = await triggerCodeqlScan(
-    `codeql-analysis-check.yml`,
-    forkRepo.parent.default_branch
-  );
+  const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
+    workflow_id: `codeql-analysis-check.yml`,
+    ref: forkRepo.parent.default_branch,
+  });
   if (codeqlStatus == 204) {
     //Wait for the scan to complete
     console.log(`Wait for job to start !`);
