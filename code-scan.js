@@ -167,8 +167,6 @@ async function run() {
   const forkRepo = await octokitRequest("createFork");
 
   await wait(5000);
-  console.log(`fork repo object`)
-  console.log(forkRepo)
   await putRequest("vulnerability-alerts", {}); // Enable dependabot
 
   await wait(5000);

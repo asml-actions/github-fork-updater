@@ -1,8 +1,6 @@
 name: Validate parent of fork
 
 on:
-  push: 
-    branches: ref-name-fix
   issues:
     types: [opened]
 
@@ -38,8 +36,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const issue_id = 224
-            const issue_title = `Parent repository for [asml-actions/python-coverage-comment-action] has updates available`
+            const issue_id = ${{ github.event.issue.number }}
+            const issue_title = `${{ github.event.issue.title }}`
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
             let repoData =await github.rest.repos.get({
               owner: context.repo.owner,
@@ -69,6 +67,6 @@ jobs:
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: 224,
+              issue_number: context.issue.number,
               labels: [`${label}`]
             })
