@@ -35,7 +35,7 @@ async function octokitRequest(request, extraArgs = {}) {
     const requestProperties = { owner, repo, ...extraArgs };
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
-    return response.data;
+    return response;
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
   }
@@ -56,7 +56,7 @@ async function putRequest(request, extraProps={}) {
 
 async function pushWorkflowFile() {
   let languages = await octokitRequest("listLanguages");
-  languages = `${JSON.stringify(Object.keys(languages))}`;
+  languages = `${JSON.stringify(Object.keys(languages.data))}`;
   console.log(`Detected languages: ${languages}`);
 
   console.log(`Add Codeql workflow file`);
@@ -139,7 +139,7 @@ async function run() {
   await wait(15000);
   const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
     workflow_id: `codeql-analysis-check.yml`,
-    ref: forkRepo.parent.default_branch,
+    ref: forkRepo.data.parent.default_branch,
   });
   if (codeqlStatus == 204) {
     //Wait for the scan to complete

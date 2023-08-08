@@ -1,10 +1,10 @@
 name: Validate parent of fork
 
 on:
+  push: 
+    branches: hotfix
   issues:
-    types: 
-      - opened
-      - labeled  
+    types: [opened]
 
 permissions:
   issues: write
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   validate-parent:
-    if: ${{github.event.label.name == 'scan-parent' || github.issue.event =='opened'}}
+    if:  ${{ vars.VALIDATE_PARENT == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
@@ -38,8 +38,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const issue_id = ${{ github.event.issue.number }}
-            const issue_title = `${{ github.event.issue.title }}`
+            const issue_id = 223
+            const issue_title = `Parent repository for [asml-actions/auto-assign-issue] has updates available`
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
             let repoData =await github.rest.repos.get({
               owner: context.repo.owner,
@@ -69,6 +69,6 @@ jobs:
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: 223,
               labels: [`${label}`]
             })
