@@ -1,15 +1,12 @@
 const { Octokit } = require("@octokit/rest");
 const core = require("@actions/core");
-const { countReset } = require("console");
 const fs = require("fs");
-const { fork } = require("child_process");
-const token = process.argv[2];
-const repo = process.argv[3];
-const originalOwner = process.argv[4];
-const owner = process.argv[5];
+const [token, repo, originalOwner, owner] = process.argv.slice(2);
+
 const octokit = new Octokit({
   auth: token,
 });
+
 const octokitFunctions = {
   getRepo: octokit.repos.get,
   delRepo: octokit.repos.delete,
@@ -29,17 +26,17 @@ async function wait(milliseconds) {
   });
 }
 
-async function octokitRequest(request) {
+async function octokitRequest(request, extraArgs = None) {
   console.log(`Running ${request} function`);
   try {
     // few functions require different properties
     let requestProperties = { owner, repo };
-    switch (request) {
-      case "createFork":
-        requestProperties.owner = originalOwner;
-        requestProperties.organization = owner;
-        break;
+    if (extraArgs) {
+      for (let key in extraArgs) {
+        requestProperties[key] = extraArgs[key];
+      }
     }
+    console.log(`requestProperties: ${JSON.stringify(requestProperties)}`)
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
     return response.data;
@@ -59,26 +56,6 @@ async function putRequest(request, extraProps) {
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
   }
-}
-
-async function getSha(ref) {
-  response = await octokit.rest.git.getRef({
-    owner,
-    repo,
-    ref: `heads/${ref}`,
-  });
-  return response.data;
-}
-
-async function deleteExistingWorkflows(sha) {
-  console.log(`Delete existing workflows`);
-  await octokit.rest.repos.deleteFile({
-    owner,
-    repo,
-    path: ".github/workflows/codeql-analysis.yml",
-    message: "🤖 Delete existing workflows",
-    sha,
-  });
 }
 
 async function pushWorkflowFile() {
@@ -164,7 +141,10 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
 
 async function run() {
   await octokitRequest("delRepo");
-  const forkRepo = await octokitRequest("createFork");
+  const forkRepo = await octokitRequest("createFork", {
+    owner: originalOwner,
+    organization: owner,
+  });
 
   await wait(5000);
   await putRequest("vulnerability-alerts", {}); // Enable dependabot
