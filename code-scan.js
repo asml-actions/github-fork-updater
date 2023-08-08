@@ -26,17 +26,10 @@ async function wait(milliseconds) {
   });
 }
 
-async function octokitRequest(request, extraArgs = '') {
+async function octokitRequest(request, extraArgs = {}) {
   console.log(`Running ${request} function`);
   try {
-    // few functions require different properties
-    let requestProperties = { owner, repo };
-    if (extraArgs) {
-      for (let key in extraArgs) {
-        requestProperties[key] = extraArgs[key];
-      }
-    }
-    console.log(`requestProperties: ${JSON.stringify(requestProperties)}`)
+    const requestProperties = { owner, repo ,...extraArgs};
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
     return response.data;
