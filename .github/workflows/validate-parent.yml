@@ -2,7 +2,9 @@ name: Validate parent of fork
 
 on:
   issues:
-    types: [opened]
+    types:
+      - opened
+      - labeled
 
 permissions:
   issues: write
@@ -10,7 +12,7 @@ permissions:
 
 jobs:
   validate-parent:
-    if:  ${{ vars.VALIDATE_PARENT == 'true' }}
+    if: ${{github.event.label.name == 'scan-parent' || github.issue.event =='opened'}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
@@ -30,7 +32,7 @@ jobs:
         with:
           application_id: ${{ secrets.GH_AUTOMATION_ID }}
           application_private_key: ${{ secrets.GH_AUTOMATION_PRIVATE_KEY }}
-      
+
       - name: Get issue details
         id: get_issue_details
         uses: actions/github-script@v6
@@ -51,19 +53,19 @@ jobs:
       - name: Run the checks
         id: check-run
         run: |
-            npm install @octokit/rest @actions/core
-            node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{steps.get_issue_details.outputs.repo-name}} ${{steps.get_issue_details.outputs.original-owner}} ${{vars.VALIDATION_ORG}}
+          npm install @octokit/rest @actions/core
+          node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{steps.get_issue_details.outputs.repo-name}} ${{steps.get_issue_details.outputs.original-owner}} ${{vars.VALIDATION_ORG}}
 
       - name: Update the issue
         uses: actions/github-script@v6
         env:
-            can_merge: ${{ steps.check-run.outputs.can-merge }}
+          can_merge: ${{ steps.check-run.outputs.can-merge }}
         with:
           github-token: ${{steps.get-app-token.outputs.token}}
           script: |
             const label  = process.env.can_merge
             console.log(`adding label ${label}`)
-      
+
             github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
