@@ -82,7 +82,6 @@ async function waitForCodeqlScan() {
   const response = await octokitRequest("listWorkflowRuns", {
     event: "workflow_dispatch",
   });
-
   const run_id = response.data.workflow_runs[0].id;
 
   let status = "queued";
@@ -92,6 +91,7 @@ async function waitForCodeqlScan() {
     const run_status = await octokitRequest("listWorkflowRunsForRepo", {
       run_id,
     });
+    console.log(run_status)
     if (run_status.data.status == "completed") {
       status = run_status.data.status;
     }
@@ -141,8 +141,7 @@ async function run() {
     workflow_id: `codeql-analysis-check.yml`,
     ref: forkRepo.data.parent.default_branch,
   });
-  console.log(codeqlStatus)
-  if (codeqlStatus == 204) {
+  if (codeqlStatus.status == 204) {
     //Wait for the scan to complete
     console.log(`Wait for job to start !`);
     await wait(15000);
