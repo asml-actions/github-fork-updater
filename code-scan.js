@@ -148,16 +148,17 @@ async function run() {
 
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
     const codeqlScanAlerts = await octokitRequest("listScanningResult");
-
-    if (
-      dependabotAlerts &&
-      codeqlScanAlerts &&
-      !checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
-    ) {
-      core.setOutput("can-merge", "update-fork");
+    if (dependabotAlerts && codeqlScanAlerts) {
+      if (
+        checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
+      ) {
+        core.setOutput("can-merge", "needs-manual-check");
+      } else {
+        core.setOutput("can-merge", "update-fork");
+      }
     } else {
       core.setOutput("can-merge", "needs-manual-check");
-    }
+    z}
   } else {
     core.setOutput("can-merge", "needs-manual-check");
   }
