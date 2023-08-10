@@ -158,7 +158,7 @@ async function run() {
       }
     } else {
       core.setOutput("can-merge", "needs-manual-check");
-    z}
+    }
   } else {
     core.setOutput("can-merge", "needs-manual-check");
   }
