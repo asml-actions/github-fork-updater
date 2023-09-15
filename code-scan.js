@@ -142,7 +142,21 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
 
   return blocking;
 }
-
+async function checkForAlerts(codeqlScanAlerts,dependabotAlerts){
+  if (dependabotAlerts && codeqlScanAlerts) {
+    if (
+      checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
+    ) {
+      issueBody = "Blocking CodeQL scan and Dependabot alerts";
+      core.setOutput("can-merge", "needs-manual-check");
+    } else {
+      core.setOutput("can-merge", "update-fork");
+    }
+  } else {
+    issueBody = "No CodeQL scan or Dependabot alerts found";
+    core.setOutput("can-merge", "needs-manual-check");
+  }
+}
 async function run() {
   await octokitRequest("delRepo");
   const forkRepo = await octokitRequest("createFork", {
@@ -174,19 +188,7 @@ async function run() {
 
       const dependabotAlerts = await octokitRequest("listAlertsForRepo");
       const codeqlScanAlerts = await octokitRequest("listScanningResult");
-      if (dependabotAlerts && codeqlScanAlerts) {
-        if (
-          checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
-        ) {
-          issueBody = "Blocking CodeQL scan and Dependabot alerts";
-          core.setOutput("can-merge", "needs-manual-check");
-        } else {
-          core.setOutput("can-merge", "update-fork");
-        }
-      } else {
-        issueBody = "No CodeQL scan or Dependabot alerts found";
-        core.setOutput("can-merge", "needs-manual-check");
-      }
+      checkForAlerts(codeqlScanAlerts,dependabotAlerts)
     } else {
       issueBody = "CodeQL scan injection failed";
       core.setOutput("can-merge", "needs-manual-check");
@@ -194,12 +196,7 @@ async function run() {
   } else {
     await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-    if (checkForBlockingAlerts([], dependabotAlerts.data)) {
-      issueBody = "Blocking Dependabot alerts";
-      core.setOutput("can-merge", "needs-manual-check");
-    } else {
-      core.setOutput("can-merge", "update-fork");
-    }
+    codeQLlanguagesError([],dependabotAlerts)
   }
   issue_owner = "asml-actions";
   issue_repo = "github-fork-updater";
