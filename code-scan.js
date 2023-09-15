@@ -37,6 +37,7 @@ async function octokitRequest(request, extraArgs = {}) {
   console.log(`Running ${request} function`);
   try {
     const requestProperties = { owner, repo, ...extraArgs };
+    console.log(requestProperties);
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
     return response;
@@ -62,22 +63,38 @@ async function pushWorkflowFile() {
   let languages = await octokitRequest("listLanguages");
   languages = `${JSON.stringify(Object.keys(languages.data))}`;
   console.log(`Detected languages: ${languages}`);
+  const supportedLanguages = [
+    "TypeScript",
+    "JavaScript",
+    "Ruby",
+    "Python",
+    "Kotlin",
+    "Go",
+    "C++",
+    "C#",
+    "C",
+  ];
+  languages = languages.filter((item) => supportedLanguages.includes(item));
+  if (languages.length) {
+    console.log(`Add Codeql workflow file`);
+    let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
+    workflowFile = workflowFile.replace("languageString", languages);
 
-  console.log(`Add Codeql workflow file`);
-  let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
-  workflowFile = workflowFile.replace("languageString", languages);
+    console.log(`Add Codeql workflow file`);
 
-  console.log(`Add Codeql workflow file`);
-
-  try {
-    await putRequest("contents/.github/workflows/codeql-analysis-check.yml", {
-      path: ".github/workflows/check-and-validate-codeql.yml",
-      message: "Inject codeql workflow",
-      content: Buffer.from(workflowFile).toString("base64"),
-    });
-    console.log("Workflow file created successfully");
-  } catch (error) {
-    console.error("Error creating workflow file:", error);
+    try {
+      await putRequest("contents/.github/workflows/codeql-analysis-check.yml", {
+        path: ".github/workflows/check-and-validate-codeql.yml",
+        message: "Inject codeql workflow",
+        content: Buffer.from(workflowFile).toString("base64"),
+      });
+      console.log("Workflow file created successfully");
+    } catch (error) {
+      console.error("Error creating workflow file:", error);
+    }
+  } else {
+    console.log("No supported languages for codeQL.");
+    return 'NoLanguages'
   }
 }
 
@@ -136,16 +153,16 @@ async function run() {
   await wait(5000);
 
   // Push Codeql.yml file
-  await pushWorkflowFile();
-
+  const codeQLlanguagesError = await pushWorkflowFile();
+  // if(!codeQLlanguagesError){
   //Trigger a scan
   await wait(15000);
   const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
     workflow_id: `codeql-analysis-check.yml`,
     ref: forkRepo.data.parent.default_branch,
   });
-
-  let issueBody = ""
+  
+  let issueBody = "";
   if (codeqlStatus.status == 204) {
     //Wait for the scan to complete
     console.log(`Wait for job to start !`);
@@ -153,22 +170,22 @@ async function run() {
     await waitForCodeqlScan();
 
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-    const codeqlScanAlerts = await octokitRequest("listScanningResult");    
+    const codeqlScanAlerts = await octokitRequest("listScanningResult");
     if (dependabotAlerts && codeqlScanAlerts) {
       if (
         checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
       ) {
-        issueBody = "Blocking CodeQL scan and Dependabot alerts"
+        issueBody = "Blocking CodeQL scan and Dependabot alerts";
         core.setOutput("can-merge", "needs-manual-check");
       } else {
         core.setOutput("can-merge", "update-fork");
       }
     } else {
-      issueBody = "No CodeQL scan or Dependabot alerts found"
+      issueBody = "No CodeQL scan or Dependabot alerts found";
       core.setOutput("can-merge", "needs-manual-check");
     }
   } else {
-    issueBody = "CodeQL scan injection failed"
+    issueBody = "CodeQL scan injection failed";
     core.setOutput("can-merge", "needs-manual-check");
   }
 
@@ -181,11 +198,10 @@ async function run() {
       owner: issue_owner,
       repo: issue_repo,
       issue_number,
-      body: issueBody
+      body: issueBody,
     });
-  }
-  else {
-    console.log(`No issues with the checks`)
+  } else {
+    console.log(`No issues with the checks`);
   }
 }
 
