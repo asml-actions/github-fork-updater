@@ -1,7 +1,8 @@
 const { Octokit } = require("@octokit/rest");
 const core = require("@actions/core");
 const fs = require("fs");
-const [token, repo, originalOwner, owner, issue_number, issue_token ] = process.argv.slice(2);
+const [token, repo, originalOwner, owner, issue_number, issue_token] =
+  process.argv.slice(2);
 
 const octokit = new Octokit({
   auth: token,
@@ -94,7 +95,7 @@ async function pushWorkflowFile() {
     }
   } else {
     console.log("No supported languages for codeQL.");
-    return 'NoLanguages'
+    return "NoLanguages";
   }
 }
 
@@ -120,14 +121,16 @@ async function waitForCodeqlScan() {
 
 function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
   let blocking = false;
-  codeScanningAlerts.forEach((alert) => {
-    if (
-      alert.rule.security_severity_level == "critical" ||
-      alert.rule.security_severity_level == "high"
-    ) {
-      blocking = true;
-    }
-  });
+  if (codeScanningAlerts) {
+    codeScanningAlerts.forEach((alert) => {
+      if (
+        alert.rule.security_severity_level == "critical" ||
+        alert.rule.security_severity_level == "high"
+      ) {
+        blocking = true;
+      }
+    });
+  }
   dependabotAlerts.forEach((alert) => {
     if (
       alert.security_advisory.severity == "critical" ||
@@ -154,45 +157,56 @@ async function run() {
 
   // Push Codeql.yml file
   const codeQLlanguagesError = await pushWorkflowFile();
-  // if(!codeQLlanguagesError){
-  //Trigger a scan
-  await wait(15000);
-  const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
-    workflow_id: `codeql-analysis-check.yml`,
-    ref: forkRepo.data.parent.default_branch,
-  });
-  
-  let issueBody = "";
-  if (codeqlStatus.status == 204) {
-    //Wait for the scan to complete
-    console.log(`Wait for job to start !`);
+  if (!codeQLlanguagesError) {
+    //Trigger a scan
     await wait(15000);
-    await waitForCodeqlScan();
+    const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
+      workflow_id: `codeql-analysis-check.yml`,
+      ref: forkRepo.data.parent.default_branch,
+    });
 
-    const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-    const codeqlScanAlerts = await octokitRequest("listScanningResult");
-    if (dependabotAlerts && codeqlScanAlerts) {
-      if (
-        checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
-      ) {
-        issueBody = "Blocking CodeQL scan and Dependabot alerts";
-        core.setOutput("can-merge", "needs-manual-check");
+    let issueBody = "";
+    if (codeqlStatus.status == 204) {
+      //Wait for the scan to complete
+      console.log(`Wait for job to start !`);
+      await wait(15000);
+      await waitForCodeqlScan();
+
+      const dependabotAlerts = await octokitRequest("listAlertsForRepo");
+      const codeqlScanAlerts = await octokitRequest("listScanningResult");
+      if (dependabotAlerts && codeqlScanAlerts) {
+        if (
+          checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
+        ) {
+          issueBody = "Blocking CodeQL scan and Dependabot alerts";
+          core.setOutput("can-merge", "needs-manual-check");
+        } else {
+          core.setOutput("can-merge", "update-fork");
+        }
       } else {
-        core.setOutput("can-merge", "update-fork");
+        issueBody = "No CodeQL scan or Dependabot alerts found";
+        core.setOutput("can-merge", "needs-manual-check");
       }
     } else {
-      issueBody = "No CodeQL scan or Dependabot alerts found";
+      issueBody = "CodeQL scan injection failed";
       core.setOutput("can-merge", "needs-manual-check");
     }
   } else {
-    issueBody = "CodeQL scan injection failed";
-    core.setOutput("can-merge", "needs-manual-check");
+    await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
+    const dependabotAlerts = await octokitRequest("listAlertsForRepo");
+    if (checkForBlockingAlerts([], dependabotAlerts.data)) {
+      issueBody = "Blocking Dependabot alerts";
+      core.setOutput("can-merge", "needs-manual-check");
+    } else {
+      core.setOutput("can-merge", "update-fork");
+    }
   }
-
-  issue_owner = 'asml-actions'
-  issue_repo = 'github-fork-updater'
+  issue_owner = "asml-actions";
+  issue_repo = "github-fork-updater";
   if (issueBody.length > 0) {
-    console.log(`Creating a new comment in issue [${issue_number}] in repo [${issue_owner}/${issue_repo}] to indicate status: [${issueBody}]`)
+    console.log(
+      `Creating a new comment in issue [${issue_number}] in repo [${issue_owner}/${issue_repo}] to indicate status: [${issueBody}]`
+    );
     // create an comment in the issue to indicate why a manual check is needed. uses different client!
     issue_octokit.rest.issues.createComment({
       owner: issue_owner,
