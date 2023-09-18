@@ -78,7 +78,10 @@ async function pushWorkflowFile() {
   if (languages.length) {
     console.log(`Add Codeql workflow file`);
     let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
-    workflowFile = workflowFile.replace("languageString", JSON.stringify(languages));
+    workflowFile = workflowFile.replace(
+      "languageString",
+      JSON.stringify(languages)
+    );
 
     console.log(`Add Codeql workflow file`);
 
@@ -141,17 +144,17 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
 
   return blocking;
 }
-async function checkForAlerts(codeqlScanAlerts, dependabotAlerts) {
-  if (dependabotAlerts && codeqlScanAlerts) {
+async function checkForAlerts(codeqlScanAlerts = [], dependabotAlerts = []) {
+  if (dependabotAlerts || codeqlScanAlerts) {
     if (checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)) {
-      issueBody = "Blocking CodeQL scan and Dependabot alerts";
       core.setOutput("can-merge", "needs-manual-check");
+      return "Blocking CodeQL scan and/pr Dependabot alerts";
     } else {
       core.setOutput("can-merge", "update-fork");
     }
   } else {
-    issueBody = "No CodeQL scan or Dependabot alerts found";
     core.setOutput("can-merge", "needs-manual-check");
+    return "No CodeQL scan or Dependabot alerts found";
   }
 }
 async function run() {
@@ -185,7 +188,7 @@ async function run() {
 
       const dependabotAlerts = await octokitRequest("listAlertsForRepo");
       const codeqlScanAlerts = await octokitRequest("listScanningResult");
-      checkForAlerts(codeqlScanAlerts, dependabotAlerts);
+      issueBody = checkForAlerts(codeqlScanAlerts, dependabotAlerts);
     } else {
       issueBody = "CodeQL scan injection failed";
       core.setOutput("can-merge", "needs-manual-check");
@@ -193,13 +196,7 @@ async function run() {
   } else {
     await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-    if(checkForBlockingAlerts([], dependabotAlerts)){
-      issueBody = "Blocking Dependabot alerts";
-      core.setOutput("can-merge", "needs-manual-check");
-    }else{
-      issueBody = "No Dependabot alerts, No codeQL scans due to no supported languages.";
-      core.setOutput("can-merge", "update-fork");
-    }
+    checkForAlerts([], dependabotAlerts);
   }
   issue_owner = "asml-actions";
   issue_repo = "github-fork-updater";
