@@ -62,9 +62,8 @@ async function putRequest(request, extraProps = {}) {
 
 async function pushWorkflowFile() {
   let languages = await octokitRequest("listLanguages");
-  console.log(Object.keys(languages.data))
-  languages = JSON.stringify(Object.keys(languages.data));
-  console.log(`Detected languages: ${languages} type: ${typeof(languages)}`);
+  languages = Object.keys(languages.data);
+  console.log(`Detected languages: ${languages} type: ${typeof languages}`);
   const supportedLanguages = [
     "TypeScript",
     "JavaScript",
@@ -80,7 +79,7 @@ async function pushWorkflowFile() {
   if (languages.length) {
     console.log(`Add Codeql workflow file`);
     let workflowFile = fs.readFileSync("codeql-analysis-check.yml", "utf8");
-    workflowFile = workflowFile.replace("languageString", languages);
+    workflowFile = workflowFile.replace("languageString", JSON.stringify(languages));
 
     console.log(`Add Codeql workflow file`);
 
@@ -143,11 +142,9 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
 
   return blocking;
 }
-async function checkForAlerts(codeqlScanAlerts,dependabotAlerts){
+async function checkForAlerts(codeqlScanAlerts, dependabotAlerts) {
   if (dependabotAlerts && codeqlScanAlerts) {
-    if (
-      checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)
-    ) {
+    if (checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)) {
       issueBody = "Blocking CodeQL scan and Dependabot alerts";
       core.setOutput("can-merge", "needs-manual-check");
     } else {
@@ -189,7 +186,7 @@ async function run() {
 
       const dependabotAlerts = await octokitRequest("listAlertsForRepo");
       const codeqlScanAlerts = await octokitRequest("listScanningResult");
-      checkForAlerts(codeqlScanAlerts,dependabotAlerts)
+      checkForAlerts(codeqlScanAlerts, dependabotAlerts);
     } else {
       issueBody = "CodeQL scan injection failed";
       core.setOutput("can-merge", "needs-manual-check");
@@ -197,7 +194,7 @@ async function run() {
   } else {
     await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-    codeQLlanguagesError([],dependabotAlerts)
+    codeQLlanguagesError([], dependabotAlerts);
   }
   issue_owner = "asml-actions";
   issue_repo = "github-fork-updater";
