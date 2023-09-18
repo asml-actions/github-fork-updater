@@ -38,7 +38,6 @@ async function octokitRequest(request, extraArgs = {}) {
   console.log(`Running ${request} function`);
   try {
     const requestProperties = { owner, repo, ...extraArgs };
-    console.log(requestProperties);
     const response = await octokitFunctions[request](requestProperties);
     console.log(`Function ${request} finished succesfully`);
     return response;
@@ -194,7 +193,13 @@ async function run() {
   } else {
     await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-    codeQLlanguagesError([], dependabotAlerts);
+    if(checkForBlockingAlerts([], dependabotAlerts)){
+      issueBody = "Blocking Dependabot alerts";
+      core.setOutput("can-merge", "needs-manual-check");
+    }else{
+      issueBody = "No Dependabot alerts, No codeQL scans due to no supported languages.";
+      core.setOutput("can-merge", "update-fork");
+    }
   }
   issue_owner = "asml-actions";
   issue_repo = "github-fork-updater";
