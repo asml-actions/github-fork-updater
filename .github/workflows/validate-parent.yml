@@ -1,9 +1,10 @@
 name: Validate parent of fork
 
 on:
-  push:
-    branches:
-      - noLanguagesFix
+  issues:
+    types: 
+      - opened
+      - labeled  
 
 permissions:
   issues: write
@@ -11,6 +12,7 @@ permissions:
 
 jobs:
   validate-parent:
+    if: ${{github.event.label.name == 'scan-parent' || github.event.action == 'opened' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
@@ -36,11 +38,11 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const issue_id = 298
-            const issue_title = 'Parent repository for [asml-actions/install-nix-action] has updates available'
+            const issue_id = ${{ github.event.issue.number }}
+            const issue_title = `${{ github.event.issue.title }}`
             const repo_name = issue_title.substring(issue_title.indexOf("/") + 1,  issue_title.lastIndexOf("]"));
             let repoData =await github.rest.repos.get({
-              owner: 'asml-actions',
+              owner: context.repo.owner,
               repo: repo_name
             });
             originalOwner = repoData.data.parent.owner.login
@@ -52,7 +54,7 @@ jobs:
         id: check-run
         run: |
             npm install @octokit/rest @actions/core
-            node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{steps.get_issue_details.outputs.repo-name}} ${{steps.get_issue_details.outputs.original-owner}} ${{vars.VALIDATION_ORG}} 298 ${{steps.get-app-token.outputs.token}} }
+            node code-scan.js  ${{steps.get-validation-token.outputs.token}} ${{steps.get_issue_details.outputs.repo-name}} ${{steps.get_issue_details.outputs.original-owner}} ${{vars.VALIDATION_ORG}} ${{ github.event.issue.number }} ${{steps.get-app-token.outputs.token}} }
 
       - name: Update the issue
         uses: actions/github-script@v6
@@ -65,8 +67,8 @@ jobs:
             console.log(`adding label ${label}`)
       
             github.rest.issues.addLabels({
-              owner: 'asml-actions',
-              repo: 'github-fork-updater',
-              issue_number: 298,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
               labels: [`${label}`]
             })
