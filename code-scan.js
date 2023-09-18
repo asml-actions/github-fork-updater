@@ -62,6 +62,7 @@ async function putRequest(request, extraProps = {}) {
 
 async function pushWorkflowFile() {
   let languages = await octokitRequest("listLanguages");
+  console.log(Object.keys(languages.data))
   languages = JSON.stringify(Object.keys(languages.data));
   console.log(`Detected languages: ${languages} type: ${typeof(languages)}`);
   const supportedLanguages = [
