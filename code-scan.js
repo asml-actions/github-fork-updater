@@ -170,6 +170,8 @@ async function run() {
   await wait(5000);
 
   // Push Codeql.yml file
+  
+  let issueBody = "";
   const codeQLlanguagesError = await pushWorkflowFile();
   if (!codeQLlanguagesError) {
     //Trigger a scan
@@ -179,7 +181,6 @@ async function run() {
       ref: forkRepo.data.parent.default_branch,
     });
 
-    let issueBody = "";
     if (codeqlStatus.status == 204) {
       //Wait for the scan to complete
       console.log(`Wait for job to start !`);
