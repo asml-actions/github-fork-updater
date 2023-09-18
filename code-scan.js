@@ -193,7 +193,7 @@ async function run() {
       issueBody = "CodeQL scan injection failed";
       core.setOutput("can-merge", "needs-manual-check");
     }
-   else {
+  } else {
     await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
     checkForAlerts([], dependabotAlerts);
@@ -214,6 +214,6 @@ async function run() {
   } else {
     console.log(`No issues with the checks`);
   }
-}}
+}
 
 run();
