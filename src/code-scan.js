@@ -172,7 +172,7 @@ async function run() {
   const dependabotResult = await octokitRequest("createDependabotPR", {
     base: "main",
     head_repo: "dependabot-scan-pr",
-    head: forkRepo.data.parent.default_branch,
+    head: `${owner}:${forkRepo.data.parent.default_branch}`,
   });
   console.log(dependabotResult)
   // Push Codeql.yml file
