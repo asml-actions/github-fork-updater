@@ -172,7 +172,7 @@ async function run() {
   await wait(5000);
   octokitRequest('createNewBranchRef',{ref:'refs/heads/dependabot-scan-branch',sha:'e5edb94ec7c2fc314cd1a39b2a236e8a886b630b'})
   const dependabotResult = await octokitRequest("createDependabotPR", {
-    base: "main",
+    base: "dependabot-scan-branch",
     head: forkRepo.data.parent.default_branch,
   });
   console.log(dependabotResult)
