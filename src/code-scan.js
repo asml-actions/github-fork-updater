@@ -24,6 +24,7 @@ const octokitFunctions = {
   listWorkflowRuns: octokit.rest.actions.listWorkflowRunsForRepo,
   getWorkflowRun: octokit.rest.actions.getWorkflowRun,
   createDependabotPR: octokit.rest.pulls.create,
+  createNewBranchRef: octokit.rest.git.createRef 
 };
 
 async function wait(milliseconds) {
@@ -169,10 +170,10 @@ async function run() {
   await putRequest("vulnerability-alerts"); // Enable dependabot
 
   await wait(5000);
+  octokitRequest('createNewBranchRef',{ref:'refs/heads/dependabot-scan-branch',sha:'e5edb94ec7c2fc314cd1a39b2a236e8a886b630b'})
   const dependabotResult = await octokitRequest("createDependabotPR", {
     base: "main",
-    head_repo: "dependabot-scan-pr",
-    head: `${owner}:${forkRepo.data.parent.default_branch}`,
+    head: forkRepo.data.parent.default_branch,
   });
   console.log(dependabotResult)
   // Push Codeql.yml file
