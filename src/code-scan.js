@@ -180,7 +180,7 @@ async function run() {
     base: "dependabot-scan-branch",
     head: forkRepo.data.parent.default_branch,
   });
-  console.log(dependabotResult)
+  // console.log(dependabotResult)
   // Push Codeql.yml file
 
   // let issueBody = "";
