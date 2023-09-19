@@ -172,8 +172,8 @@ async function run() {
   // Push Codeql.yml file
   
   let issueBody = "";
-  const codeQLlanguagesError = await pushWorkflowFile();
-  if (!codeQLlanguagesError) {
+  const codeqlLanguagesError = await pushWorkflowFile();
+  if (!codeqlLanguagesError) {
     //Trigger a scan
     await wait(15000);
     const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
