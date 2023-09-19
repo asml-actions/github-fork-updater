@@ -23,6 +23,7 @@ const octokitFunctions = {
   triggerCodeqlScan: octokit.rest.actions.createWorkflowDispatch,
   listWorkflowRuns: octokit.rest.actions.listWorkflowRunsForRepo,
   getWorkflowRun: octokit.rest.actions.getWorkflowRun,
+  createDependabotPR: octokit.rest.pulls.create,
 };
 
 async function wait(milliseconds) {
@@ -168,53 +169,58 @@ async function run() {
   await putRequest("vulnerability-alerts"); // Enable dependabot
 
   await wait(5000);
-
+  const dependabotResult = await octokitRequest("createDependabotPR", {
+    base: "main",
+    head_repo: "dependabot-scan-pr",
+    head: forkRepo.data.parent.default_branch,
+  });
+  console.log(dependabotResult)
   // Push Codeql.yml file
-  
-  let issueBody = "";
-  const codeqlLanguagesError = await pushWorkflowFile();
-  if (!codeqlLanguagesError) {
-    //Trigger a scan
-    await wait(15000);
-    const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
-      workflow_id: `codeql-analysis-check.yml`,
-      ref: forkRepo.data.parent.default_branch,
-    });
 
-    if (codeqlStatus.status == 204) {
-      //Wait for the scan to complete
-      console.log(`Wait for job to start !`);
-      await wait(15000);
-      await waitForCodeqlScan();
+  // let issueBody = "";
+  // const codeqlLanguagesError = await pushWorkflowFile();
+  // if (!codeqlLanguagesError) {
+  //   //Trigger a scan
+  //   await wait(15000);
+  //   const codeqlStatus = await octokitRequest("triggerCodeqlScan", {
+  //     workflow_id: `codeql-analysis-check.yml`,
+  //     ref: forkRepo.data.parent.default_branch,
+  //   });
 
-      const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-      const codeqlScanAlerts = await octokitRequest("listScanningResult");
-      issueBody = checkForAlerts(codeqlScanAlerts, dependabotAlerts);
-    } else {
-      issueBody = "CodeQL scan injection failed";
-      core.setOutput("can-merge", "needs-manual-check");
-    }
-  } else {
-    await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
-    const dependabotAlerts = await octokitRequest("listAlertsForRepo");
-    checkForAlerts([], dependabotAlerts);
-  }
-  issue_owner = "asml-actions";
-  issue_repo = "github-fork-updater";
-  if (issueBody.length > 0) {
-    console.log(
-      `Creating a new comment in issue [${issue_number}] in repo [${issue_owner}/${issue_repo}] to indicate status: [${issueBody}]`
-    );
-    // create an comment in the issue to indicate why a manual check is needed. uses different client!
-    issue_octokit.rest.issues.createComment({
-      owner: issue_owner,
-      repo: issue_repo,
-      issue_number,
-      body: issueBody,
-    });
-  } else {
-    console.log(`No issues with the checks`);
-  }
+  //   if (codeqlStatus.status == 204) {
+  //     //Wait for the scan to complete
+  //     console.log(`Wait for job to start !`);
+  //     await wait(15000);
+  //     await waitForCodeqlScan();
+
+  //     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
+  //     const codeqlScanAlerts = await octokitRequest("listScanningResult");
+  //     issueBody = checkForAlerts(codeqlScanAlerts, dependabotAlerts);
+  //   } else {
+  //     issueBody = "CodeQL scan injection failed";
+  //     core.setOutput("can-merge", "needs-manual-check");
+  //   }
+  // } else {
+  //   await wait(60000); // Since we don't know how long dependabot will take to scan the wait is 1 minute.
+  //   const dependabotAlerts = await octokitRequest("listAlertsForRepo");
+  //   checkForAlerts([], dependabotAlerts);
+  // }
+  // issue_owner = "asml-actions";
+  // issue_repo = "github-fork-updater";
+  // if (issueBody.length > 0) {
+  //   console.log(
+  //     `Creating a new comment in issue [${issue_number}] in repo [${issue_owner}/${issue_repo}] to indicate status: [${issueBody}]`
+  //   );
+  //   // create an comment in the issue to indicate why a manual check is needed. uses different client!
+  //   issue_octokit.rest.issues.createComment({
+  //     owner: issue_owner,
+  //     repo: issue_repo,
+  //     issue_number,
+  //     body: issueBody,
+  //   });
+  // } else {
+  //   console.log(`No issues with the checks`);
+  // }
 }
 
 run();
