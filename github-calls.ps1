@@ -39,9 +39,9 @@ function CallWebRequest {
         $result = Invoke-WebRequest -Uri $url -Headers $Headers -Method $verbToUse -Body $bodyContent -ErrorAction Stop
         
         Write-Host "  StatusCode: $($result.StatusCode)"
-        Write-Host "  RateLimit-Limit: $($result.Headers["X-RateLimit-Limit"])"
-        Write-Host "  RateLimit-Remaining: $($result.Headers["X-RateLimit-Remaining"])"
-        Write-Host "  RateLimit-Reset: $($result.Headers["X-RateLimit-Reset"])"
+        Write-Host "  RateLimit-Limit: $($result.Headers["x-ratelimit-limit"])"
+        Write-Host "  RateLimit-Remaining: $($result.Headers["x-ratelimit-remaining"])"
+        Write-Host "  RateLimit-Reset: $($result.Headers["x-rateLimit-reset"])"
         Write-Host "  RateLimit-Used: $($result.Headers["x-ratelimit-used"])"
         # convert the response json content
         $info = ($result.Content | ConvertFrom-Json)
@@ -49,9 +49,9 @@ function CallWebRequest {
     catch {
         Write-Host "Error calling api at [$url]:"
         Write-Host "  StatusCode: $($_.Exception.Response.StatusCode)"
-        Write-Host "  RateLimit-Limit: $($_.Exception.Response.Headers.GetValues("X-RateLimit-Limit"))"
-        Write-Host "  RateLimit-Remaining: $($_.Exception.Response.Headers.GetValues("X-RateLimit-Remaining"))"
-        Write-Host "  RateLimit-Reset: $($_.Exception.Response.Headers.GetValues("X-RateLimit-Reset"))"
+        Write-Host "  RateLimit-Limit: $($_.Exception.Response.Headers.GetValues("x-ratelimit-limit"))"
+        Write-Host "  RateLimit-Remaining: $($_.Exception.Response.Headers.GetValues("x-ratelimit-remaining"))"
+        Write-Host "  RateLimit-Reset: $($_.Exception.Response.Headers.GetValues("x-ratelimit-reset"))"
         Write-Host "  RateLimit-Used: $($_.Exception.Response.Headers.GetValues("x-ratelimit-used"))"
 
         $messageData = $_.ErrorDetails.Message | ConvertFrom-Json
