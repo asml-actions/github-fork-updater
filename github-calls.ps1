@@ -45,6 +45,23 @@ function CallWebRequest {
         Write-Host "  RateLimit-Used: $($result.Headers["x-ratelimit-used"])"
         # convert the response json content
         $info = ($result.Content | ConvertFrom-Json)
+
+        if ($result.Headers["Link"]) {
+            Write-Debug "Found pagination link: $($result.Headers["Link"])"
+            # load next link from header
+
+            $result.Headers["Link"].Split(',') | ForEach-Object {
+                # search for the 'next' link in this list
+                $link = $_.Split(';')[0].Trim()
+                if ($_.Split(';')[1].Contains("next")) {
+                    $nextUrl = $link.Substring(1, $link.Length - 2)
+
+                    # continue fetching next page
+                    $nextResult = CallWebRequest -url $nextUrl -userName $userName -PAT $PAT -verbToUse $verbToUse -body $body
+                    $info += $nextResult
+                }
+            }
+        }
     }
     catch {
         Write-Host "Error calling api at [$url]:"
