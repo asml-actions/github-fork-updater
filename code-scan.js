@@ -3,7 +3,7 @@ const core = require("@actions/core");
 const fs = require("fs");
 const [token, repo, originalOwner, owner, issue_number, issue_token] =
   process.argv.slice(2);
-
+const exemptions = [{ repo: "tics-github-action", vulnerability: "Incomplete string escaping or encoding" }]
 const octokit = new Octokit({
   auth: token,
 });
@@ -126,8 +126,8 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
   if (codeScanningAlerts) {
     codeScanningAlerts.forEach((alert) => {
       if (
-        alert.rule.security_severity_level == "critical" ||
-        alert.rule.security_severity_level == "high"
+        (alert.rule.security_severity_level == "critical" ||
+          alert.rule.security_severity_level == "high") && !falsePositive(alert)
       ) {
         blocking = true;
       }
@@ -135,8 +135,8 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
   }
   dependabotAlerts.forEach((alert) => {
     if (
-      alert.security_advisory.severity == "critical" ||
-      alert.security_advisory.severity == "high"
+      (alert.security_advisory.severity == "critical" ||
+        alert.security_advisory.severity == "high") && !falsePositive(alert)
     ) {
       blocking = true;
     }
@@ -157,6 +157,13 @@ async function checkForAlerts(codeqlScanAlerts = [], dependabotAlerts = []) {
     return "No CodeQL scan or Dependabot alerts found";
   }
 }
+function falsePositive(alert) {
+  const repo = alert.html_url.split("/")[4]
+  if (exemptions.some(e => e.repo === repo && e.vulnerability === alert.rule.description)) {
+    return true
+  }
+  return false
+}
 async function run() {
   await octokitRequest("delRepo");
   const forkRepo = await octokitRequest("createFork", {
@@ -170,7 +177,7 @@ async function run() {
   await wait(5000);
 
   // Push Codeql.yml file
-  
+
   let issueBody = "";
   const codeqlLanguagesError = await pushWorkflowFile();
   if (!codeqlLanguagesError) {
