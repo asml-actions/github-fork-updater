@@ -49,7 +49,10 @@ jobs:
             console.log(`Issue Details - ${issue_id} , ${issue_title}, ${repo_name}`)
             core.setOutput(`repo-name`,repo_name)
             core.setOutput(`original-owner`,originalOwner)
-
+      - name: Setup-Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
       - name: Run the checks
         id: check-run
         run: |
