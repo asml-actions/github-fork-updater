@@ -1,16 +1,11 @@
-const { Octokit } = require("@octokit/rest");
-const core = require("@actions/core");
-const fs = require("fs");
-const [token, repo, originalOwner, owner, issue_number, issue_token] =
-  process.argv.slice(2);
-const exemptions = [{ repo: "tics-github-action", vulnerability: "Incomplete string escaping or encoding" }]
-const octokit = new Octokit({
-  auth: token,
-});
+import { Octokit } from "@octokit/rest";
+import core from "@actions/core";
+import fs from "fs";
 
-const issue_octokit = new Octokit({
-  auth: issue_token,
-});
+const [token, repo, originalOwner, owner, issue_number, issue_token] = process.argv.slice(2);
+const exemptions = [{ repo: "tics-github-action", vulnerability: "Incomplete string escaping or encoding" }];
+const octokit = new Octokit({ auth: token });
+const issue_octokit = new Octokit({ auth: issue_token });
 
 const octokitFunctions = {
   getRepo: octokit.repos.get,
@@ -39,7 +34,7 @@ async function octokitRequest(request, extraArgs = {}) {
   try {
     const requestProperties = { owner, repo, ...extraArgs };
     const response = await octokitFunctions[request](requestProperties);
-    console.log(`Function ${request} finished succesfully`);
+    console.log(`Function ${request} finished successfully`);
     return response;
   } catch (error) {
     console.log(`Failed to run ${request}: ${error.message}`);
@@ -133,17 +128,21 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
       }
     });
   }
-  dependabotAlerts.forEach((alert) => {
-    if (
-      (alert.security_advisory.severity == "critical" ||
-        alert.security_advisory.severity == "high") && !falsePositive(alert)
-    ) {
-      blocking = true;
-    }
-  });
+
+  if (dependabotAlerts) {
+    dependabotAlerts.forEach((alert) => {
+      if (
+        (alert.security_advisory.severity == "critical" ||
+          alert.security_advisory.severity == "high") && !falsePositive(alert)
+      ) {
+        blocking = true;
+      }
+    });
+  }
 
   return blocking;
 }
+
 async function checkForAlerts(codeqlScanAlerts = [], dependabotAlerts = []) {
   if (dependabotAlerts || codeqlScanAlerts) {
     if (checkForBlockingAlerts(codeqlScanAlerts.data, dependabotAlerts.data)) {
@@ -157,13 +156,15 @@ async function checkForAlerts(codeqlScanAlerts = [], dependabotAlerts = []) {
     return "No CodeQL scan or Dependabot alerts found";
   }
 }
+
 function falsePositive(alert) {
-  const repo = alert.html_url.split("/")[4]
+  const repo = alert.html_url.split("/")[4];
   if (exemptions.some(e => e.repo === repo && e.vulnerability === alert.rule.description)) {
-    return true
+    return true;
   }
-  return false
+  return false;
 }
+
 async function run() {
   await octokitRequest("delRepo");
   const forkRepo = await octokitRequest("createFork", {
@@ -206,8 +207,8 @@ async function run() {
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
     checkForAlerts([], dependabotAlerts);
   }
-  issue_owner = "asml-actions";
-  issue_repo = "github-fork-updater";
+  let issue_owner = "asml-actions";
+  let issue_repo = "github-fork-updater";
   if (issueBody.length > 0) {
     console.log(
       `Creating a new comment in issue [${issue_number}] in repo [${issue_owner}/${issue_repo}] to indicate status: [${issueBody}]`

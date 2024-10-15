@@ -1,0 +1,14 @@
+{
+  "name": "validate-fork",
+  "version": "1.0.0",
+  "main": "code-scan.js",
+  "type": "module",
+  "scripts": {
+    "start": "node code-scan.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^18.0.0",
+    "@actions/core": "^1.2.6",
+    "fs": "0.0.1-security"
+  }
+}
