@@ -207,8 +207,8 @@ async function run() {
     const dependabotAlerts = await octokitRequest("listAlertsForRepo");
     checkForAlerts([], dependabotAlerts);
   }
-  issue_owner = "asml-actions";
-  issue_repo = "github-fork-updater";
+  let issue_owner = "asml-actions";
+  let issue_repo = "github-fork-updater";
   if (issueBody.length > 0) {
     console.log(
       `Creating a new comment in issue [${issue_number}] in repo [${issue_owner}/${issue_repo}] to indicate status: [${issueBody}]`
