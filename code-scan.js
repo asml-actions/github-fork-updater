@@ -128,14 +128,17 @@ function checkForBlockingAlerts(codeScanningAlerts, dependabotAlerts) {
       }
     });
   }
-  dependabotAlerts.forEach((alert) => {
-    if (
-      (alert.security_advisory.severity == "critical" ||
-        alert.security_advisory.severity == "high") && !falsePositive(alert)
-    ) {
-      blocking = true;
-    }
-  });
+
+  if (dependabotAlerts) {
+    dependabotAlerts.forEach((alert) => {
+      if (
+        (alert.security_advisory.severity == "critical" ||
+          alert.security_advisory.severity == "high") && !falsePositive(alert)
+      ) {
+        blocking = true;
+      }
+    });
+  }
 
   return blocking;
 }
