@@ -170,6 +170,8 @@ function CreateIssueFor {
     $existingIssueForRepo = $existingIssues | Where-Object {$_.title -eq $issueTitle}
 
     if ($null -eq $existingIssueForRepo) {
+        # Add the 'scan-parent' label to new issues
+        $labels = @("scan-parent")
         CreateNewIssueForRepo -repoInfo $repo -issuesRepositoryName $issuesRepository -title $issueTitle -body $body -PAT $PAT -userName $userName
     } 
     else {
