@@ -154,6 +154,7 @@ function CreateIssueFor {
         [object] $existingIssues,
         [string] $PAT,
         [string] $userName
+        [array] $labels
     )
 
     #Write-Host "- repoName $($repoInfo.repoName)"
