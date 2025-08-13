@@ -180,37 +180,6 @@ function CreateIssueFor {
         Write-Host "Issue with title [$issueTitle] already exists"
     }
 }
-function CreateNewIssueForRepo {
-    param (
-        [object] $repoInfo,
-        [string] $issuesRepositoryName,
-        [string] $title,
-        [string] $body,
-        [string] $PAT,
-        [string] $userName,
-        [array] $labels = @()
-    )
-
-    $url = "https://api.github.com/repos/$issuesRepositoryName/issues"
-
-    $issuePayload = @{
-        title  = $title
-        body   = $body
-        labels = $labels
-    }
-
-    $jsonPayload = $issuePayload | ConvertTo-Json
-
-    $headers = @{
-        Authorization = "token $PAT"
-        "User-Agent"  = "$userName"
-        Accept        = "application/vnd.github.v3+json"
-    }
-
-    Write-Host "Creating new issue in [$issuesRepositoryName] with title [$title] and labels [$($labels -join ', ')]"
-
-    Invoke-RestMethod -Uri $url -Method Post -Headers $headers -Body $jsonPayload
-}
 
 function CreateIssuesForReposWithUpdates {
     param(
