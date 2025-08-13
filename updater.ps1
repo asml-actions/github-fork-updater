@@ -169,7 +169,7 @@ function CreateIssueFor {
     }
     $existingIssueForRepo = $existingIssues | Where-Object {$_.title -eq $issueTitle}
 
-    if ($existingIssueForRepo -is $null) {
+    if ($null -eq $existingIssueForRepo) {
         CreateNewIssueForRepo -repoInfo $repoInfo -issuesRepositoryName $issuesRepository -title $issueTitle -body $body -PAT $PAT -userName $userName
     } 
     else {
