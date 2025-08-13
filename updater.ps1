@@ -178,18 +178,16 @@ function CreateIssueFor {
         $labelsUrl = "https://api.github.com/repos/$issuesRepositoryName/issues/$issueNumber/labels"
         
         # Remove the label if it exists (DELETE endpoint for a single label)
-        $verbToUse = "DELETE"
         try {
             $removeLabelUrl = "https://api.github.com/repos/$issuesRepositoryName/issues/$issueNumber/labels/scan-parent"
-            CallWebRequest -url $removeLabelUrl -method $verbToUse -userName $userName -PAT $PAT
+            CallWebRequest -url $removeLabelUrl -verbToUse "DELETE" -userName $userName -PAT $PAT
         } catch [System.Net.WebException] {
             Write-Host "Label 'scan-parent' not found on issue [$issueNumber], skipping delete."
         }
     
         # Add the label again
-        $verbToUse = "POST"
         $labelsBody = @{ labels = @("scan-parent") } | ConvertTo-Json
-        CallWebRequest -url $labelsUrl -method $verbToUse -body $labelsBody -userName $userName -PAT $PAT
+        CallWebRequest -url $labelsUrl -verbToUse "POST" -userName $userName -PAT $PAT -body $labelsBody -contentType "application/json"
         
         Write-Host "Issue with title [$issueTitle] already exists. Refreshed label 'scan-parent'."
     }
