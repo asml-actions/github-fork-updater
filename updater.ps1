@@ -193,15 +193,6 @@ function CreateIssueFor {
         
         Write-Host "Issue with title [$issueTitle] already exists. Refreshed label 'scan-parent'."
     }
-        } else {
-            Write-Host "Label 'scan-parent' added to issue [$issueNumber] successfully."
-        }
-    } catch {
-        Write-Warning "Error occurred while adding label 'scan-parent' to issue [$issueNumber]: $_"
-    }
-        
-        Write-Host "Issue with title [$issueTitle] already exists. Refreshed label 'scan-parent'."
-    }
 }
 
 function CreateIssuesForReposWithUpdates {
