@@ -170,7 +170,7 @@ function CreateIssueFor {
     $existingIssueForRepo = $existingIssues | Where-Object {$_.title -eq $issueTitle}
 
     if ($null -eq $existingIssueForRepo) {
-        CreateNewIssueForRepo -repoInfo $repoInfo -issuesRepositoryName $issuesRepository -title $issueTitle -body $body -PAT $PAT -userName $userName
+        CreateNewIssueForRepo -repoInfo $repo -issuesRepositoryName $issuesRepository -title $issueTitle -body $body -PAT $PAT -userName $userName
     } 
     else {
         # The issue already exists. Remove and re-add the "scan-parent" label to trigger automation or update the issue status.
