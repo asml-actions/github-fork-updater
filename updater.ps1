@@ -187,7 +187,7 @@ function CreateIssueFor {
     
         # Add the label again
         $labelsBody = @{ labels = @("scan-parent") } | ConvertTo-Json
-        CallWebRequest -url $labelsUrl -verbToUse "POST" -userName $userName -PAT $PAT -body $labelsBody -contentType "application/json"
+        CallWebRequest -url $labelsUrl -verbToUse "POST" -userName $userName -PAT $PAT -body $labelsBody
         
         Write-Host "Issue with title [$issueTitle] already exists. Refreshed label 'scan-parent'."
     }
