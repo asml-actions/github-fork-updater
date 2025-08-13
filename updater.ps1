@@ -169,17 +169,21 @@ function CreateIssueFor {
     }
     $existingIssueForRepo = $existingIssues | Where-Object {$_.title -eq $issueTitle}
 
-    if ($null -eq $existingIssueForRepo) {
-        CreateNewIssueForRepo -repoInfo $repo -issuesRepositoryName $issuesRepository -title $issueTitle -body $body -PAT $PAT -userName $userName
+    if ($existingIssueForRepo -is $null) {
+        CreateNewIssueForRepo -repoInfo $repoInfo -issuesRepositoryName $issuesRepository -title $issueTitle -body $body -PAT $PAT -userName $userName
     } 
     else {
         # the issue already exists. Remove and re-add the "scan-parent" label
         $issueNumber = $existingIssueForRepo.number
-        $labelsUrl = "https://api.github.com/repos/$issuesRepository/issues/$issueNumber/labels"
+        $labelsUrl = "https://api.github.com/repos/$issuesRepositoryName/issues/$issueNumber/labels"
         
-        # Remove the label if it exists
-        $removeLabelUrl = "https://api.github.com/repos/$issuesRepository/issues/$issueNumber/labels/scan-parent"
-        CallWebRequest -url $removeLabelUrl -method "DELETE" -userName $userName -PAT $PAT
+        # Remove the label if it exists (DELETE endpoint for a single label)
+        try {
+            $removeLabelUrl = "https://api.github.com/repos/$issuesRepositoryName/issues/$issueNumber/labels/scan-parent"
+            CallWebRequest -url $removeLabelUrl -method "DELETE" -userName $userName -PAT $PAT
+        } catch [System.Net.WebException] {
+            Write-Host "Label 'scan-parent' not found on issue [$issueNumber], skipping delete."
+        }
         
         # Add the label again
         $labelsBody = @{ labels = @("scan-parent") } | ConvertTo-Json
