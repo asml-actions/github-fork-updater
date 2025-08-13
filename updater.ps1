@@ -173,17 +173,21 @@ function CreateIssueFor {
         CreateNewIssueForRepo -repoInfo $repo -issuesRepositoryName $issuesRepository -title $issueTitle -body $body -PAT $PAT -userName $userName
     } 
     else {
-        # the issue already exists. Remove and re-add the "scan-parent" label
+        # The issue already exists. Remove and re-add the "scan-parent" label to trigger automation or update the issue status.
         $issueNumber = $existingIssueForRepo.number
         $labelsUrl = "https://api.github.com/repos/$issuesRepository/issues/$issueNumber/labels"
         
-        # Remove the label if it exists
-        $removeLabelUrl = "https://api.github.com/repos/$issuesRepository/issues/$issueNumber/labels/scan-parent"
-        CallWebRequest -url $removeLabelUrl -method "DELETE" -userName $userName -PAT $PAT
-        
+        # Remove the label if it exists (DELETE endpoint for a single label)
+        try {
+            $removeLabelUrl = "https://api.github.com/repos/$issuesRepository/issues/$issueNumber/labels/scan-parent"
+            CallWebRequest -url $removeLabelUrl -verbToUse "DELETE" -userName $userName -PAT $PAT
+        } catch [System.Net.WebException] {
+            Write-Host "Label 'scan-parent' not found on issue [$issueNumber], skipping delete."
+        }
+    
         # Add the label again
         $labelsBody = @{ labels = @("scan-parent") } | ConvertTo-Json
-        CallWebRequest -url $labelsUrl -method "POST" -body $labelsBody -userName $userName -PAT $PAT
+        CallWebRequest -url $labelsUrl -verbToUse "POST" -userName $userName -PAT $PAT -body $labelsBody
         
         Write-Host "Issue with title [$issueTitle] already exists. Refreshed label 'scan-parent'."
     }
