@@ -76,6 +76,9 @@ function UpdateFork {
         return 1
     }
 
+    git ls-remote --tags origin
+    git ls-remote --tags github
+
     # push the changes back to your repo
     Write-Host "Pushing tags back to fork"
     git push --force origin --tags
