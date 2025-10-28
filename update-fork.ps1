@@ -57,6 +57,11 @@ function UpdateFork {
     Write-Host "Fetching changes from parent repo"
     git fetch github $parent.parentDefaultBranch --tags
 
+    Write-Host "Pull changes from parent repo"
+    git pull github $parent.parentDefaultBranch
+
+    Write-Host "Current HEAD"
+    git rev-parse HEAD
     # make sure you are on the right branch
     Write-Host "Pulling all changes from the parent on branch [$($parent.parentDefaultBranch)]"
     git checkout $parent.parentDefaultBranch
@@ -65,6 +70,9 @@ function UpdateFork {
     Write-Host "Merging changes from parent repo"
     git merge github/$($parent.parentDefaultBranch) --ff
 
+    Write-Host "HEAD after merge"
+    git rev-parse HEAD
+    
     # check if there are any merge conflicts
     $mergeConflict = git status | Select-String "both modified"
     if ($mergeConflict) {
