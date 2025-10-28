@@ -55,7 +55,7 @@ function UpdateFork {
 
     # fetch the changes from the parent
     Write-Host "Fetching changes from parent repo"
-    git fetch github $parent.parentDefaultBranch --tags
+    git fetch github $parent.parentDefaultBranch --tags --force
 
     Write-Host "Pull changes from parent repo"
     git pull github $parent.parentDefaultBranch
