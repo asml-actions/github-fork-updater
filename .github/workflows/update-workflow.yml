@@ -32,9 +32,5 @@ jobs:
     - uses: actions/checkout@v3
 
     - run: |
-       echo "Found the issue that triggered this event with number [${{ github.event.issue.number }}]"
-       echo "Found the issue title [${{ github.event.issue.title }}]"
-
-    - run: |
-       .\update-fork.ps1 -orgName ${{ github.repository_owner }} -userName "xxx" -PAT ${{ steps.get-token.outputs.token }} -issueTitle "${{ github.event.issue.title }}" -issueId ${{ github.event.issue.number }} -issuesRepository  ${{ github.repository }}
+       .\update-fork.ps1 -orgName ${{ github.repository_owner }} -userName "xxx" -PAT ${{ steps.get-token.outputs.token }} -issueTitle "Parent repository for [asml-actions/tics-github-action] has updates available" -issueId 1867 -issuesRepository  ${{ github.repository }}
       shell: pwsh
