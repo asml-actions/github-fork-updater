@@ -68,9 +68,6 @@ function UpdateFork {
     Write-Host "Merging changes from parent repo"
     git merge github/$($parent.parentDefaultBranch) --ff
 
-    $HEAD = git rev-parse HEAD
-    Write-Host "HEAD after merge [$HEAD]"
-    
     # check if there are any merge conflicts
     $mergeConflict = git status | Select-String "both modified"
     if ($mergeConflict) {
